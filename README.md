@@ -36,7 +36,7 @@ This section is to set up the YuGiOh Save Deck Extractor and YuGiOh Randomizer p
 These scripts will **modify your save and game data**. It's important that you **make backups** of them before running the scripts in case something bad happens to them!
 
 Here are the typical locations of these files:
-* Save data: _{Steam Install Path}\userdata\{Steam ID Number}\1150640\remote_
+* Save data: _{Steam Install Path}\userdata\\{Steam ID Number}\1150640\remote_
   * The save file is _savegame.dat_ 
 * Game data: _{Steam Install Path}\steamapps\common\Yu-Gi-Oh! Legacy of the Duelist Link Evolution_
   * The files you want to backup are _YGO_2020.dat_ and _YGO_2020.toc_
