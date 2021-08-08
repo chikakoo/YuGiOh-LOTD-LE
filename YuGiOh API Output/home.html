@@ -2,11 +2,45 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-	<title>Yugioh Card Picker</title>
+	<title>Yugioh API Output</title>
 	<script src="JavaScript/data.js"></script>
 	<script src="JavaScript/dataFromAPI.js"></script>
+	<script src="JavaScript/settings.js"></script>
+	<script src="JavaScript/helpers.js"></script>
 	<script src="JavaScript/main.js"></script>
+	<link rel="stylesheet" href="Styles/styles.css">
 </head>
 <body onload="Main.generateString()">
+	<div id="cardInformation" class="nodisp">
+		<div class="card-labels-and-values">
+			<div class="card-info-group">
+				<div class="card-info-label">Index:</div><div class="card-info-value" id="indexValue"></div>
+				<div class="card-info-label">Id:</div><div class="card-info-value" id="idValue"></div>
+				<div class="card-info-label">Name:</div><div class="card-info-value" id="nameValue"></div>
+			</div>
+			<div class="card-info-group">
+				<div class="card-info-label">Level:</div><div class="card-info-value" id="levelValue"></div>
+				<div class="card-info-label">Race:</div><div class="card-info-value" id="raceValue"></div>
+				<div class="card-info-label">Type:</div><div class="card-info-value" id="typeValue"></div>
+				<div class="card-info-label">Attribute:</div><div class="card-info-value" id="attributeValue"></div>
+			</div>
+			<div class="card-info-group">
+				<div class="card-info-label">Attack:</div><div class="card-info-value" id="atkValue"></div>
+				<div class="card-info-label">Defense:</div><div class="card-info-value" id="defValue"></div>
+			</div>
+			<div class="card-info-group">
+				<div class="card-info-label">Archetype:</div><div class="card-info-value" id="archetypeValue"></div>
+				<div class="card-info-label">Ban Info:</div><div class="card-info-value" id="banlist_infoValue"></div>
+			</div>
+			<div class="card-info-group">
+				<div class="card-info-label">Description:</div><div class="card-info-value" id="descriptionValue"></div>
+			</div>
+		</div>
+		<div class="card-info-group">
+			<button id="buttonCardIsGood" onclick="Main.onCardIsGoodClicked()">Good to Go!</button>
+			<button id="buttonCardIsBad" onclick="Main.onCardIsBadClicked()">Ban it!</button>
+		</div>
+	</div>
+	<div id="mainDiv"></div>
 </body>
 </html>

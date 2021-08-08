@@ -1,0 +1,43 @@
+.nodisp {
+    display: none !important;
+}
+
+.card-labels-and-values {
+    height: 150px;
+    max-height: 150px;
+}
+
+.card-info-group {
+    display: flex;
+    flex-direction: row;
+}
+
+.card-info-label {
+    font-weight: bold;
+    padding-right: 3px;
+}
+
+.card-info-value {
+    padding-right: 15px;
+}
+
+#cardInformation {
+    height: 300px;
+    padding-bottom: 10px;
+}
+
+button {
+    height: 30px;
+    width: 100px;
+}
+
+#buttonCardIsGood {
+    background: seagreen;
+    color: white;
+    margin-right: 20px;
+}
+
+#buttonCardIsBad {
+    background: rosybrown;
+}
+
