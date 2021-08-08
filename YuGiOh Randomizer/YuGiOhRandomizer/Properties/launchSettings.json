@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "YuGiOhRandomizer": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Program Files (x86)\\Steam\\userdata\\85198859\\1150640\\remote\\savegame.dat\" \"D:\\Documents\\Video Games\\PC\\Yu-Gi-Oh Legacy of the Duelist\\Modding\" \"1classic_hard_bandit\" \"Random\""
+    }
+  }
+}
