@@ -46,6 +46,7 @@ If you haven't already, create an empty folder. Do the following with it:
 - Place the two .bat files in the repo there (_replace_opponent_deck_with_prebuilt.bat_ and _randomizer_player_and_opponent_decks.bat_)
 - **Copy** (not move) over the _YGO_2020.dat_ and _YGO_2020.toc_ from your Steam installation (see above)
 - Create a new folder called _Output_
+  - **Copy** over the _YGO_2020.toc_ file (the other will be generated, so just this one is okay)
    - Both scripts will use this for as temporary location before overwriting your Steam files
 ### Modifying the scripts
 Now that we have the files in place, there's some changes that need to be made for this to work.
@@ -67,7 +68,7 @@ The following is required for the _YuGiOh Save Deck Extractor_ project:
 
 The following is required for the _YuGiOh Randomizer_ project:
 - Open _randomize_player_and_opponent_decks.bat_ and reassign the variables appropriately (note that you should **not** use quotes)
-  - **RandomizerLocation**: The folder containing YuGiOhRandomizer.dll
+  - **RandomizerLocation**: The folder containing _YuGiOhRandomizer.dll_
   - **ScriptLocation**: The folder you just created, with the python and batch scripts, etc.
   - **SteamSaveLocation**: The path to the _savegame.dat_ file (**including the file name**) (see above)
   - **SteamDataLocation**: The folder containing _YGO.2020.dat_ and _YGO_2020.toc_ in your Steam installation (see above)
