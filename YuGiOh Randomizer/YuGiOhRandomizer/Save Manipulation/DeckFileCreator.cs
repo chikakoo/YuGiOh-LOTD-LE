@@ -65,7 +65,7 @@ namespace YuGiOhRandomizer
 			}
 
 
-			string path = $@"{Program.DeckSettings.PackingScriptLocation}\YGO_2020\decks.zib\{Program.DeckSettings.OpponentDeckToReplace}.ytb";
+			string path = $@"{Program.DeckSettings.PackingScriptLocation}\YGO_2020\decks.zib\{Program.DeckSettings.OpponentDeckToReplace}.ydc";
 			File.WriteAllBytes(path, ydcBytes);
 		}
 
