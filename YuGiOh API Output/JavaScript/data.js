@@ -1,4 +1,4 @@
-Data = {
+Data = { //TODO: add 7
     "30,000-Year White Turtle": 4455,
     "Adreus, Keeper of Armageddon": 9846,
     "Aether, the Empowering Dragon": 11136,

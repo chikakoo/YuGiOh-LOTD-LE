@@ -13,6 +13,7 @@ namespace YuGiOhRandomizer
 		private const int NumberOfLevel1Monsters = 2;
 		private const int NumberOfSpells = 9;
 		private const int NumberOfTraps = 9;
+		private const int NumberOfExtraDeckMonsters = 15;
 
 		/// <summary>
 		/// Used to enforce the card limit
@@ -22,33 +23,12 @@ namespace YuGiOhRandomizer
 		/// <summary>
 		/// The cards in the deck
 		/// </summary>
-		public List<Card> Cards { get; set; } = new List<Card>();
-
-		/// <summary>
-		/// The cards in the main deck
-		/// </summary>
-		public List<Card> MainDeckCards
-		{
-			get
-			{
-				return Cards.Where(x =>
-					x.IsNonSpecificMonster || x.IsSpellCard || x.IsTrapCard
-				).ToList();
-			}
-		}
+		public List<Card> MainDeckCards { get; set; } = new List<Card>();
 
 		/// <summary>
 		/// The cards in the extra deck
 		/// </summary>
-		public List<Card> ExtraDeckCards
-		{
-			get
-			{
-				return Cards.Where(x =>
-					x.IsExtraDeckCard
-				).ToList();
-			}
-		}
+		public List<Card> ExtraDeckCards { get; set; } = new List<Card>();
 
 		/// <summary>
 		/// Constructor - creates the object with a random deck
@@ -66,7 +46,10 @@ namespace YuGiOhRandomizer
 			AddMonsters();
 			AddSpells();
 			AddTraps();
-			Cards = Cards.OrderBy(x => x.Name).ToList();
+			MainDeckCards = MainDeckCards.OrderBy(x => x.Name).ToList();
+
+			AddExtraDeckMonsters();
+			ExtraDeckCards = ExtraDeckCards.OrderBy(x => x.Name).ToList();
 		}
 
 		/// <summary>
@@ -92,7 +75,10 @@ namespace YuGiOhRandomizer
 		{
 			for (int i = 0; i < numberToAdd; i++)
 			{
-				AddCard(Program.CardList.NonSpecificMonsters.Where(x => x.Level >= min && x.Level <= max).ToList());
+				AddCard(
+					Program.CardList.NonSpecificMonsters.Where(x => x.Level >= min && x.Level <= max).ToList(),
+					MainDeckCards
+				);
 			}
 		}
 
@@ -113,7 +99,7 @@ namespace YuGiOhRandomizer
 		{
 			for (int i = 0; i < NumberOfSpells; i++)
 			{
-				AddCard(Program.CardList.Spells);
+				AddCard(Program.CardList.Spells, MainDeckCards);
 			}
 		}
 
@@ -124,7 +110,19 @@ namespace YuGiOhRandomizer
 		{
 			for (int i = 0; i < NumberOfTraps; i++)
 			{
-				AddCard(Program.CardList.Traps);
+				AddCard(Program.CardList.Traps, MainDeckCards);
+			}
+		}
+
+		/// <summary>
+		/// Adds 15 completely random extra deck monsters
+		/// Eventually this will be more reasonable!
+		/// </summary>
+		private void AddExtraDeckMonsters()
+		{
+			for (int i = 0; i < NumberOfExtraDeckMonsters; i++)
+			{
+				AddCard(Program.CardList.ExtraDeckMonsters, ExtraDeckCards);
 			}
 		}
 
@@ -132,8 +130,9 @@ namespace YuGiOhRandomizer
 		/// Adds a card from the given list
 		/// Will respect the ban values
 		/// </summary>
-		/// <param name="listToChooseFrom"></param>
-		private void AddCard(List<Card> listToChooseFrom)
+		/// <param name="listToChooseFrom">The list of cards to randomly choose from</param>
+		/// <param name="deckToAddTo">The deck to add to</param>
+		private void AddCard(List<Card> listToChooseFrom, List<Card> deckToAddTo)
 		{
 			Card cardToAdd = null;
 			do
@@ -152,7 +151,7 @@ namespace YuGiOhRandomizer
 			}
 
 
-			Cards.Add(cardToAdd);
+			deckToAddTo.Add(cardToAdd);
 		}
 
 

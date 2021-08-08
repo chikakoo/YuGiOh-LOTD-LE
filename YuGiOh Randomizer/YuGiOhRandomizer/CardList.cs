@@ -21,7 +21,13 @@ namespace YuGiOhRandomizer
 		}
 
 		[JsonIgnore]
-		public List<Card> ExtraDeckMonsters { get; } //TODO later - not testing this right now
+		public List<Card> ExtraDeckMonsters
+		{
+			get
+			{
+				return All.Where(x => x.IsExtraDeckCard).ToList();
+			}
+		}
 
 		[JsonIgnore]
 		public List<Card> Spells
