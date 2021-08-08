@@ -21,7 +21,7 @@ This project, along with its corresponding batch script (titled _replace_opponen
 ### YuGiOh Randomizer
 This project requires setup to use - see the _Setup Help_ section for deteails.
 
-This project is used to generate random decks for yourself and an opponent. That way, you can get into a duel without knowing any of the cards involved. It currently has very basic logic, and will be improved upon in the future, including the ability to configure card distributions.
+This project, along with its cooresponding batch script (titled _randomize_player_and_opponent_decks.bat_) are used to generate random decks for yourself and an opponent. That way, you can get into a duel without knowing any of the cards involved. It currently has very basic logic, and will be improved upon in the future, including the ability to configure card distributions.
 
 # Setup Help
 This section is to set up the YuGiOh Save Deck Extractor and YuGiOh Randomizer projects.
@@ -36,9 +36,9 @@ This section is to set up the YuGiOh Save Deck Extractor and YuGiOh Randomizer p
 These scripts will **modify your save and game data**. It's important that you **make backups** of them before running the scripts in case something bad happens to them!
 
 Here are the typical locations of these files:
-* Save data: _<Steam Install Path>\userdata\<Steam ID Number>\1150640\remote_
+* Save data: _{Steam Install Path}\userdata\{Steam ID Number}\1150640\remote_
   * The save file is _savegame.dat_ 
-* Game data: _<Steam Install Path>\steamapps\common\Yu-Gi-Oh! Legacy of the Duelist Link Evolution_
+* Game data: _{Steam Install Path}\steamapps\common\Yu-Gi-Oh! Legacy of the Duelist Link Evolution_
   * The files you want to backup are _YGO_2020.dat_ and _YGO_2020.toc_
 ### Setting Up the Directory
 If you haven't already, create an empty folder. Do the following with it: 
