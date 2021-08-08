@@ -5,7 +5,7 @@ This is _not_ cross-platform. It is only set up to work with Windows.
 
 # Credits
 Code was used/modifed from the following locations to get this to work - full credits to them:
-- For code used to write to the savedata.dat and to create the ytd files: https://github.com/thomasneff/YGOLOTDPatchDraft/blob/master/YGOLOTDPatchDraft/FileUtilities.cs
+- For code used to write to the savedata.dat and to create the .ydc files: https://github.com/thomasneff/YGOLOTDPatchDraft/blob/master/YGOLOTDPatchDraft/FileUtilities.cs
 - For code used to fix the checksum of the save file once modified: https://github.com/Arefu/Wolf/blob/d904ca93a84e49dfc86a7c573778f245a194bcd5/Elroy/GameSaveData.cs
 - To MoonlitDeath, for the tutorial on modding in general: https://github.com/MoonlitDeath/Link-Evolution-Editing-Guide/wiki
 
@@ -16,7 +16,7 @@ This is a somewhat janky project that outputs an HTML page full of relevant card
 ### YuGiOh Save Deck Extractor
 This project requires setup to use - see the _Setup Help_ section for deteails.
 
-This project, along with its corresponding batch script (titled _replace_opponent_deck_with_prebuilt.bat_) are used to replace an opponent's deck with one of the custom decks that you constructed in-game. This is useful if you want to duel against your own decks.
+This project, along with its cooresponding batch script (titled _replace_opponent_deck_with_prebuilt.bat_) are used to replace an opponent's deck with one of the custom decks that you constructed in-game. This is useful if you want to duel against your own decks.
 
 ### YuGiOh Randomizer
 This project requires setup to use - see the _Setup Help_ section for deteails.
@@ -59,9 +59,9 @@ The following is required for the _YuGiOh Save Deck Extractor_ project:
 - Open _replace_opponent_deck_with_prebuilt.bat_ and reassign the variables appropriately (note that you should **not** use quotes)
   - **DeckExtractorLocation**: The folder containing _YuGiOh Save Deck Extractor.dll_
   - **ScriptLocation**: The folder you just created, with the python and batch scripts, etc.
-  - **SteamSaveLocation**: The folder containing your _savedata.dat_ file (see above)
+  - **SteamSaveLocation**: The path to the _savedata.dat_ file (**including the file name**) (see above)
   - **SteamDataLocation**: The folder containing _YGO.2020.dat_ and _YGO_2020.toc_ in your Steam installation (see above)
-  - **DeckToExtract**: This is the name of your pre-built deck to replace the opponents'. Make sure it's a valid deck before running this script!
+  - **DeckToExtract**: This is the name of your pre-built deck to replace the opponent's. Make sure it's a valid deck before running this script!
   - **DeckToReplace**: This is the name of the opponent's deck that will be repalced - it defaults to Bandit Keith's challenge deck
     - After extracting, the names will be in _<Current Folder>/YGO_2020/decks.zib_, should you want to change this
 
@@ -69,7 +69,7 @@ The following is required for the _YuGiOh Randomizer_ project:
 - Open _randomize_player_and_opponent_decks.bat_ and reassign the variables appropriately (note that you should **not** use quotes)
   - **RandomizerLocation**: The folder containing YuGiOhRandomizer.dll
   - **ScriptLocation**: The folder you just created, with the python and batch scripts, etc.
-  - **SteamSaveLocation**: The folder containing your _savedata.dat_ file (see above)
+  - **SteamSaveLocation**: The path to the _savedata.dat_ file (**including the file name**) (see above)
   - **SteamDataLocation**: The folder containing _YGO.2020.dat_ and _YGO_2020.toc_ in your Steam installation (see above)
   - **OpponentDeckToReplace**: This is the name of the opponent's deck the randomizer will replace - it defaults to Bandit Keith's challenge deck
     - After extracting, the names will be in _<Current Folder>/YGO_2020/decks.zib_, should you want to change this
