@@ -63,12 +63,12 @@ namespace YuGiOh_Save_Deck_Extractor
 				throw new ArgumentException("Error: Couldn't find the location of the deck in your savegame.dat!");
 			}
 
+			const int deckNameByteLength = 66;
 			const int MaxMainDeckCards = 60;
 			const int MaxExtraDeckCards = 15;
 
 			// Offset until the number of main deck cards starts
-			int offsetAfterString = 51;
-			int byteOffset = locations[0] + searchPattern.Length + offsetAfterString;
+			int byteOffset = locations[0] + deckNameByteLength;
 			int numberOfMainDeckCards = (savegame[byteOffset + 1] << 8) + savegame[byteOffset];
 			byteOffset += 2;
 			int numberOfExtraDeckCards = (savegame[byteOffset + 1] << 8) + savegame[byteOffset];
