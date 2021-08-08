@@ -80,7 +80,7 @@ Main = {
      * Displays all the info from the card in the appropriate divs
      */
     _displayCardInfo(cardInfo) {
-        document.getElementById("indexValue").innerHTML = this._currentIndex;
+        document.getElementById("indexValue").innerHTML = this._currentIndex - 1; // The current index is actually the index of the NEXT card to show up
         document.getElementById("idValue").innerHTML = Data[cardInfo.name];
         document.getElementById("nameValue").innerHTML = cardInfo.name;
 
@@ -199,7 +199,7 @@ Main = {
      * @param {String} property - the property
      * @param {Boolean} isNumberProperty - if true, doesn't add quotes to the value
      */
-    _getPropertyString(data, property, isNumberProperty) {
+    _getPropertyString: function(data, property, isNumberProperty) {
         let value = data[property];
         if (value) {
             if (property === "banlist_info") {
@@ -212,5 +212,20 @@ Main = {
             return `"${property}": ${value}, `;
         }
         return "";
+    },
+
+    /**
+     * Utility function that gives you the index of the given card name in the API data
+     * @param {String} cardName - the card name
+     * @returns - the index, or -1 if not found
+     */
+    findIndexOfCardInAPIData: function(cardName) {
+        let values = Object.values(DataFromAPI);
+        for (let i = 0; i < values.length; i++) {
+            if (values[i].name.toLowerCase() === cardName.toLowerCase().trim()) {
+                return i;
+            }
+        }
+        return -1
     }
 };
