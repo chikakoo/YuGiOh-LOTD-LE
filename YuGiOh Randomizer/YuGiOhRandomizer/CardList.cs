@@ -51,8 +51,21 @@ namespace YuGiOhRandomizer
 			CardList cardList = JsonConvert.DeserializeObject<CardList>(
 				File.ReadAllText($@"{directory}\cardData.json")
 			);
+			cardList.FilterCards();
 
 			return cardList;
+		}
+
+		/// <summary>
+		/// Updates the "All" list without cards we don't want to include
+		/// Assumes it's already populated
+		/// </summary>
+		private void FilterCards()
+		{
+			All = All.Where(x =>
+				!x.TempBan && // Filter temporarily banned cards
+				x.Race != RaceTypes.Ritual // Filter ritual spell cards
+			).ToList();
 		}
 	}
 }

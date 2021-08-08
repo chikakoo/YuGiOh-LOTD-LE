@@ -2,7 +2,6 @@
 
 namespace YuGiOhRandomizer
 {
-
 	public enum CardTypes
 	{
 		[EnumMember(Value = "Effect Monster")]

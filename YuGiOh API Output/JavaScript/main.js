@@ -11,6 +11,7 @@ Main = {
     _currentCardInfo: {},
     _uniqueTypes: {}, // Helps with figuring out the C# part of things
     _uniqueBanListValues: {},
+    _uniqueRaces: {},
 
     generateString: function() {
         if (Settings.verifyCardsExist) {
@@ -151,6 +152,10 @@ Main = {
 
             if (data.banlist_info && data.banlist_info.ban_tcg && !_this._uniqueBanListValues[data.banlist_info.ban_tcg]) {
                 _this._uniqueBanListValues[data.banlist_info.ban_tcg] = data.banlist_info.ban_tcg;
+            }
+
+            if (!_this._uniqueRaces[data.race]) {
+                _this._uniqueRaces[data.race] = data.race;
             }
 
             objectString += _this._createObjectString(cardName, data);

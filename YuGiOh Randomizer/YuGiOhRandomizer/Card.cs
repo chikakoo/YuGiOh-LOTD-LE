@@ -43,7 +43,8 @@ namespace YuGiOhRandomizer
 		public int Level { get; set; }
 
 		[JsonProperty]
-		public string Race { get; set; }
+		[JsonConverter(typeof(StringEnumConverter))]
+		public RaceTypes Race { get; set; }
 
 		[JsonProperty("atk")]
 		public int Attack { get; set; }
@@ -58,6 +59,13 @@ namespace YuGiOhRandomizer
 		[JsonConverter(typeof(StringEnumConverter))]
 		[DefaultValue(BanListTypes.Unlimited)]
 		public BanListTypes BanInfo { get; set; }
+
+		/// <summary>
+		/// Whether this is on the temporary ban list (where it's too situational to be used, so we need to skip using it)
+		/// </summary>
+		[JsonProperty]
+		[DefaultValue(false)]
+		public bool TempBan { get; set; }
 
 		[JsonIgnore]
 		public bool IsNonSpecificMonster
