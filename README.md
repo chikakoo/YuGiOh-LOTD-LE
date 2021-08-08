@@ -72,7 +72,7 @@ The following is required for the _YuGiOh Randomizer_ project:
   - **SteamSaveLocation**: The folder containing your _savedata.dat_ file (see above)
   - **SteamDataLocation**: The folder containing _YGO.2020.dat_ and _YGO_2020.toc_ in your Steam installation (see above)
   - **OpponentDeckToReplace**: This is the name of the opponent's deck the randomizer will replace - it defaults to Bandit Keith's challenge deck
-    - After extracting the names will be in _<Current Folder>/YGO_2020/decks.zib_, should you want to change this
+    - After extracting, the names will be in _<Current Folder>/YGO_2020/decks.zib_, should you want to change this
    - **PlayerDeckToReplace**: This is the name of a custom deck that you created that will be overwritten with random cards. Make sure it's a valid deck before you run this script!
 
 ### Extracting the Game Files
