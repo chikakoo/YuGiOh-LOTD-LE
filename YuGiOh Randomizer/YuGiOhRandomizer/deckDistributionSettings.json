@@ -1,0 +1,63 @@
+﻿{
+  "MainDeckSize":  { "min": 40, "max": 40 },
+  "ExtraDeckSize":  { "min":  15, "max":  15 },
+  "DeckDistributionSettings":  [
+	// generalCardType: the type of card to generate - if left blank, assumes it's Monster (not recommended)
+	// - Valid values per deck listed here:
+	// - Main Deck: Monster, Spell, Trap, RandomMain
+	// - Extra Deck: Fusion, Synchro, Xyz, Link, RandomExtra
+	//
+	// levelRange: the range of monster levels to include - ignored for all other cards
+	// cardRange: the number of cards to include
+	// excludedGeneralTypes: used ONLY with the two Random generalCardTypes 
+	// - excludes the listed generalCardTypes in the list when choosing random cards
+
+	// Main deck:
+	{ 
+	  "generalCardType": "Monster", 
+	  "levelRange":  { "min": 1, "max": 1 },
+	  "cardRange": { "min": 2, "max": 2 } 
+	},
+	{ 
+	  "generalCardType": "Monster", 
+	  "levelRange":  { "min": 2, "max": 2 },
+	  "cardRange": { "min": 3, "max": 3 } 
+	},
+	{ 
+	  "generalCardType": "Monster", 
+	  "levelRange":  { "min": 3, "max": 3 },
+	  "cardRange": { "min": 4 , "max": 4 } 
+	},
+	{ 
+	  "generalCardType":  "Monster", 
+	  "levelRange":  { "min": 4, "max": 4 },
+	  "cardRange": { "min": 9, "max": 9 } 
+	},
+	{ 
+	  "generalCardType":  "Monster", 
+	  "levelRange":  { "min": 5, "max": 6 },
+	  "cardRange": { "min": 2, "max": 2 } 
+	},
+	{ 
+	  "generalCardType":  "Monster", 
+	  "levelRange":  { "min": 7, "max": 12 },
+	  "cardRange": { "min": 2, "max": 2 } 
+	},
+
+	{ 
+	  "generalCardType":  "Spell", 
+	  "cardRange": { "min": 9, "max": 9 } 
+	},
+	{ 
+	  "generalCardType":  "Trap", 
+	  "cardRange": { "min": 9, "max": 9 } 
+	},
+
+	//Extra Deck:
+	{ 
+	  "generalCardType":  "RandomExtra", 
+	  "cardRange": { "min": 15, "max": 15 },
+	  "excludedGeneralTypes": ["Fusion"]
+	}
+  ]
+}

@@ -1,19 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace YuGiOhRandomizer
 {
 	public class RandomDeck
 	{
-		private const int NumberOfLevel7PlusMonsters = 2;
-		private const int NumberOfLevel5Or6Monsters = 2;
-		private const int NumberOfLevel4Monsters = 9;
-		private const int NumberOfLevel3Monsters = 4;
-		private const int NumberOfLevel2Monsters = 3;
-		private const int NumberOfLevel1Monsters = 2;
-		private const int NumberOfSpells = 9;
-		private const int NumberOfTraps = 9;
-		private const int NumberOfExtraDeckMonsters = 15;
+		private const int MinMainDeckSize = 40;
+		private const int MaxMainDeckSize = 60;
+		private const int MinExtraDeckSize = 0;
+		private const int MaxExtraDeckSize = 15;
 
 		/// <summary>
 		/// Used to enforce the card limit
@@ -31,99 +27,198 @@ namespace YuGiOhRandomizer
 		public List<Card> ExtraDeckCards { get; set; } = new List<Card>();
 
 		/// <summary>
-		/// Constructor - creates the object with a random deck
+		/// The main deck size - taken from the settings and clamped to the min/max values
 		/// </summary>
-		public RandomDeck()
+		public int MainDeckSize { get; set; }
+
+		/// <summary>
+		/// The extra deck size - taken from the settings and clamped to the min/max values
+		/// </summary>
+		public int ExtraDeckSize { get; set; }
+
+		/// <summary>
+		/// The number of monsters in the main deck
+		/// </summary>
+		public int MainDeckMonsterCount
 		{
-			RandomizeDeck();
+			get
+			{
+				return MainDeckCards.Count(x => x.GeneralCardType == GeneralCardTypes.Monster);
+			}
 		}
 
 		/// <summary>
-		/// Randomizes the deck
+		/// The number of spells in the main deck
 		/// </summary>
-		private void RandomizeDeck()
+		public int MainDeckSpellCount
 		{
-			AddMonsters();
-			AddSpells();
-			AddTraps();
-			MainDeckCards = MainDeckCards.OrderBy(x => x.Name).ToList();
+			get
+			{
+				return MainDeckCards.Count(x => x.GeneralCardType == GeneralCardTypes.Spell);
+			}
+		}
 
-			AddExtraDeckMonsters();
+		/// <summary>
+		/// The number of traps in the main deck
+		/// </summary>
+		public int MainDeckTrapCount
+		{
+			get
+			{
+				return MainDeckCards.Count(x => x.GeneralCardType == GeneralCardTypes.Trap);
+			}
+		}
+
+		/// <summary>
+		/// Constructor - generates the random deck based on the settings
+		/// </summary>
+		public RandomDeck()
+		{
+			Generate();
+			Validate();
+		}
+
+		/// <summary>
+		/// Validates the deck sizes, etc. to ensure things don't break
+		/// </summary>
+		public void Validate()
+		{
+			if (MainDeckSize != MainDeckCards.Count)
+			{
+				throw new Exception("Main deck not the expected size!");
+			}
+
+			if (ExtraDeckSize != ExtraDeckCards.Count)
+			{
+				throw new Exception("Main deck not the expected size!");
+			}
+
+			if (MainDeckCards.Any(x => x.DeckType != DeckTypes.Main))
+			{
+				throw new Exception("Extra deck card found in main deck!");
+			}
+
+			if (ExtraDeckCards.Any(x => x.DeckType != DeckTypes.Extra))
+			{
+				throw new Exception("Main deck card found in extra deck!");
+			}
+		}
+
+		/// <summary>
+		/// Adds all the cards to the decks
+		/// Includes sorting each deck by name
+		/// </summary>
+		private void Generate()
+		{
+			SetDeckSizes();
+			AddCardsFromTasks();
+			AddAddtionalCards();
+			MainDeckCards = MainDeckCards.OrderBy(x => x.Name).ToList();
 			ExtraDeckCards = ExtraDeckCards.OrderBy(x => x.Name).ToList();
 		}
 
 		/// <summary>
-		/// Adds all the monsters according to the level restrictions
+		/// Sets up the deck sizes based on the settings and the hard limits
 		/// </summary>
-		private void AddMonsters()
+		private void SetDeckSizes()
 		{
-			AddMonstersInLevelRange(NumberOfLevel7PlusMonsters, 7, 99);
-			AddMonstersInLevelRange(NumberOfLevel5Or6Monsters, 5, 6);
-			AddMonstersInLevelRange(NumberOfLevel4Monsters, 4);
-			AddMonstersInLevelRange(NumberOfLevel3Monsters, 3);
-			AddMonstersInLevelRange(NumberOfLevel2Monsters, 2);
-			AddMonstersInLevelRange(NumberOfLevel1Monsters, 1);
+			int mainDeckSetingsSize = Program.DeckDistributionSettings.MainDeckSize.GetRandomValue();
+			MainDeckSize = Math.Clamp(mainDeckSetingsSize, MinMainDeckSize, MaxMainDeckSize);
+
+			int extraDeckSettingsSize = Program.DeckDistributionSettings.ExtraDeckSize.GetRandomValue();
+			ExtraDeckSize = Math.Clamp(extraDeckSettingsSize, MinExtraDeckSize, MaxExtraDeckSize);
 		}
 
 		/// <summary>
-		/// Adds monsters within the given level range (both inclusive)
+		/// Goes through and adds all the cards from the set tasks
+		/// If it reaches the deck size limit, it will stop where it left off
 		/// </summary>
-		/// <param name="numberToAdd">The number of monsters to add</param>
-		/// <param name="min">The minimum level</param>
-		/// <param name="max">The maximum level</param>
-		private void AddMonstersInLevelRange(int numberToAdd, int min, int max)
+		public void AddCardsFromTasks()
 		{
-			for (int i = 0; i < numberToAdd; i++)
+			foreach (DeckDistributionTask task in Program.DeckDistributionSettings.Tasks)
 			{
-				AddCard(
-					Program.CardList.NonSpecificMonsters.Where(x => x.Level >= min && x.Level <= max).ToList(),
-					MainDeckCards
-				);
+				AddCardsFromTask(task);
 			}
 		}
 
 		/// <summary>
-		/// Adds monsters of the given level
+		/// Adds additional cards to the decks
+		/// This is done if the deck size is not yet met
 		/// </summary>
-		/// <param name="numberToAdd">The number to add</param>
-		/// <param name="level">The level of monsters to add</param>
-		private void AddMonstersInLevelRange(int numberToAdd, int level)
+		public void AddAddtionalCards()
 		{
-			AddMonstersInLevelRange(numberToAdd, level, level);
-		}
-
-		/// <summary>
-		/// Adds spells to the deck
-		/// </summary>
-		private void AddSpells()
-		{
-			for (int i = 0; i < NumberOfSpells; i++)
+			int mainDeckCardsRemaining = MainDeckSize - MainDeckCards.Count;
+			if (mainDeckCardsRemaining > 0)
 			{
-				AddCard(Program.CardList.Spells, MainDeckCards);
+				AddCardsFromTask(DeckDistributionTask.GetTaskForRandomMainCards(mainDeckCardsRemaining));
+			}
+
+			int extraDeckCardsRemaining = ExtraDeckSize - ExtraDeckCards.Count;
+			if (extraDeckCardsRemaining > 0)
+			{
+				AddCardsFromTask(DeckDistributionTask.GetTaskForRandomExtraCards(extraDeckCardsRemaining));
 			}
 		}
 
 		/// <summary>
-		/// Adds traps to the deck
+		/// Adds the cards from the given task
 		/// </summary>
-		private void AddTraps()
+		/// <param name="task">The task</param>
+		private void AddCardsFromTask(DeckDistributionTask task)
 		{
-			for (int i = 0; i < NumberOfTraps; i++)
+			List<Card> cardsToChooseFrom = GetCardsToChooseFrom(task);
+
+			int cardsToAdd = task.CardRange.GetRandomValue();
+			if (cardsToChooseFrom.Count < cardsToAdd)
 			{
-				AddCard(Program.CardList.Traps, MainDeckCards);
+				throw new Exception("Could potentially run out of cards to add! Did you restrict your card list too much?");
+			}
+
+			List<Card> deck = task.DeckType == DeckTypes.Main ? MainDeckCards : ExtraDeckCards;
+			int maxSize = task.DeckType == DeckTypes.Main ? MainDeckSize : ExtraDeckSize;
+			for (int i = 0; i < cardsToAdd && deck.Count < maxSize; i++)
+			{
+				AddCard(cardsToChooseFrom, deck);
 			}
 		}
 
 		/// <summary>
-		/// Adds 15 completely random extra deck monsters
-		/// Eventually this will be more reasonable!
+		/// Get the filtered list of all cards to randomly choose from
 		/// </summary>
-		private void AddExtraDeckMonsters()
+		/// <param name="task">The task to base the filters off of</param>
+		/// <returns>The card pool to randomly choose from</returns>
+		private List<Card> GetCardsToChooseFrom(DeckDistributionTask task)
 		{
-			for (int i = 0; i < NumberOfExtraDeckMonsters; i++)
+			List<Card> cardsToChooseFrom = task.DeckType == DeckTypes.Main
+				? Program.CardList.MainDeckCards
+				: Program.CardList.ExtraDeckCards;
+
+			// If we're picking a random card, no need to filter anything else!
+			if (task.GeneralCardType == GeneralCardTypes.RandomMain || task.GeneralCardType == GeneralCardTypes.RandomExtra)
 			{
-				AddCard(Program.CardList.ExtraDeckMonsters, ExtraDeckCards);
+				return GetCardsToChooseFromForRandomType(task, cardsToChooseFrom);
 			}
+
+			cardsToChooseFrom = cardsToChooseFrom.Where(x =>
+				x.GeneralCardType == task.GeneralCardType &&
+				(
+					x.Level == 0 || task.MonsterLevelRange.Max == 0 || // Ignore all cards with a level of 0 or a limit of 0
+					task.MonsterLevelRange.IsInRange(x.Level)
+				)
+			).ToList();
+
+			return cardsToChooseFrom;
+		}
+
+		/// <summary>
+		/// Gets the list of cards to choose from for one of the random GeneralCardTypes
+		/// </summary>
+		/// <param name="task">The current task</param>
+		/// <param name="baseList">The list to start with</param>
+		/// <returns>The filtered list - currently only excludes types, assuming that's populated</returns>
+		private List<Card> GetCardsToChooseFromForRandomType(DeckDistributionTask task, List<Card> baseList)
+		{
+			return baseList.Where(x => !task.ExcludedGeneralTypes.Contains(x.GeneralCardType)).ToList();
 		}
 
 		/// <summary>
@@ -150,10 +245,8 @@ namespace YuGiOhRandomizer
 				CardCount[cardToAdd.Name] = 1;
 			}
 
-
 			deckToAddTo.Add(cardToAdd);
 		}
-
 
 		/// <summary>
 		/// Checks whether there are already too many of the card we're trying to add

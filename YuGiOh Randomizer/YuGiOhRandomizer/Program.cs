@@ -1,15 +1,36 @@
-﻿namespace YuGiOhRandomizer
+﻿using System;
+
+namespace YuGiOhRandomizer
 {
 	public class Program
 	{
+		public static DeckDistributionSettings DeckDistributionSettings { get; set; }
 		public static CardList CardList { get; set; }
 		public static DeckSettings DeckSettings { get; set; }
 
-		public static void Main(string[] args)
+		private enum ExitCode : int
 		{
-			DeckSettings = new DeckSettings(args);
-			CardList = CardList.GetCardListInstance();
-			new DeckFileCreator().CreateAndSaveDecks();
+			Success = 0,
+			Error = 1
+		}
+
+		public static int Main(string[] args)
+		{
+			try
+			{
+				DeckDistributionSettings = DeckDistributionSettings.GetSettingsInstance();
+				DeckSettings = new DeckSettings(args);
+				CardList = CardList.GetCardListInstance();
+				new DeckFileCreator().CreateAndSaveDecks();
+
+				return (int)ExitCode.Success;
+			}
+
+			catch (Exception e)
+			{
+				Console.WriteLine(e.ToString());
+				return (int)ExitCode.Error;
+			}
 		}
 	}
 }

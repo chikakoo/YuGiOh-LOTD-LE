@@ -1,7 +1,7 @@
 @echo off
 
 :: Path variables - direct these to the appropriate locations!
-set RandomizerLocation=D:\Documents\Programs\C Sharp\YuGiOh Randomizer\YuGiOhRandomizer\bin\Debug\netcoreapp2.1
+set RandomizerLocation=D:\Documents\Programs\C Sharp\YuGiOh-LOTD-LE\YuGiOh Randomizer\YuGiOhRandomizer\bin\Debug\netcoreapp2.1
 
 :: Note that this assumes that your script outputs to ./Output, and that your file name
 :: is YGO_2020 (set it in the YuGi_compress.py file: OUTFILES = "Output/YGO_2020")
@@ -14,13 +14,17 @@ set SteamDataLocation=C:\Program Files (x86)\Steam\steamapps\common\Yu-Gi-Oh! Le
 set OpponentDeckToReplace=1classic_hard_bandit
 set PlayerDeckToReplace=Random
 
-@echo on
-
 :: Run the .net app to randomize the deck files
 :: This will edit your save file to give you a random deck in the specified slot
 :: It will also put a random deck in the opponent's location to be compiled next
 @echo Extracting deck data...
 dotnet "%RandomizerLocation%\YuGiOhRandomizer.dll" "%SteamSaveGameLocation%" "%ScriptLocation%" "%OpponentDeckToReplace%" "%PlayerDeckToReplace%"
+
+if %ERRORLEVEL% NEQ 0 (
+	@echo Randomizer failed! See the output for details...
+	pause
+	exit
+)
 
 :: Once that's done, we'll compress the files into the .dat and .toc files
 @echo Compressing game data...

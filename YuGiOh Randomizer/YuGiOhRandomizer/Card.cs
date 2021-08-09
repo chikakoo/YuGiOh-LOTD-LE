@@ -68,6 +68,59 @@ namespace YuGiOhRandomizer
 		public bool TempBan { get; set; }
 
 		[JsonIgnore]
+		public GeneralCardTypes GeneralCardType
+		{
+			get
+			{
+				switch (Type)
+				{
+					case CardTypes.NormalMonster:
+					case CardTypes.EffectMonster:
+					case CardTypes.FlipEffectMonster:
+					case CardTypes.UnionEffectMonster:
+					case CardTypes.ToonMonster:
+					case CardTypes.NormalTunerMonster:
+					case CardTypes.TunerMonster:
+					case CardTypes.GeminiMonster:
+					case CardTypes.SpiritMonster:
+					case CardTypes.PendulumNormalMonster:
+					case CardTypes.PendulumEffectMonster:
+					case CardTypes.PendulumFlipEffectMonster:
+					case CardTypes.PendulumTunerEffectMonster:
+					case CardTypes.RitualEffectMonster:
+					case CardTypes.RitualMonster:
+						return GeneralCardTypes.Monster;
+
+					case CardTypes.SpellCard:
+						return GeneralCardTypes.Spell;
+
+					case CardTypes.TrapCard:
+						return GeneralCardTypes.Trap;
+
+					case CardTypes.FusionMonster:
+					case CardTypes.PendulumEfectFusionMonster:
+						return GeneralCardTypes.Fusion;
+
+					case CardTypes.SynchroMonster:
+					case CardTypes.SynchroPendulumEffectMonster:
+					case CardTypes.SynchroTunerMonster:
+						return GeneralCardTypes.Synchro;
+
+					case CardTypes.XYZMonster:
+					case CardTypes.XYZPendulumEffectMonster:
+						return GeneralCardTypes.Xyz;
+
+
+					case CardTypes.LinkMonster:
+						return GeneralCardTypes.Link;
+
+					default:
+						throw new Exception("Tried to parse a non-existant card type somehow!");
+				}
+			}
+		}
+
+		[JsonIgnore]
 		public bool IsNonSpecificMonster
 		{
 			get
@@ -91,39 +144,28 @@ namespace YuGiOhRandomizer
 		}
 
 		[JsonIgnore]
-		public bool IsSpellCard
+		public DeckTypes DeckType
 		{
 			get
 			{
-				return Type == CardTypes.SpellCard;
-			}
-		}
-
-		[JsonIgnore]
-		public bool IsTrapCard
-		{
-			get
-			{
-				return Type == CardTypes.TrapCard;
-			}
-		}
-
-		[JsonIgnore]
-		public bool IsExtraDeckCard
-		{
-			get
-			{
-				return new List<CardTypes>()
+				switch (GeneralCardType)
 				{
-					CardTypes.FusionMonster,
-					CardTypes.LinkMonster,
-					CardTypes.PendulumEfectFusionMonster,
-					CardTypes.SynchroMonster,
-					CardTypes.SynchroPendulumEffectMonster,
-					CardTypes.SynchroTunerMonster,
-					CardTypes.XYZMonster,
-					CardTypes.XYZPendulumEffectMonster
-				}.Contains(Type);
+					case GeneralCardTypes.Monster:
+					case GeneralCardTypes.Spell:
+					case GeneralCardTypes.Trap:
+					case GeneralCardTypes.RandomMain:
+						return DeckTypes.Main;
+
+					case GeneralCardTypes.Fusion:
+					case GeneralCardTypes.Synchro:
+					case GeneralCardTypes.Xyz:
+					case GeneralCardTypes.Link:
+					case GeneralCardTypes.RandomExtra:
+						return DeckTypes.Extra;
+
+					default:
+						throw new ArgumentException("Tried to get deck type for an unknown card type somehow!");
+				}
 			}
 		}
 
@@ -133,7 +175,8 @@ namespace YuGiOhRandomizer
 		/// <returns />
 		public override string ToString()
 		{
-			return Name;
+			string generalCardType = Enum.GetName(typeof(GeneralCardTypes), GeneralCardType);
+			return $"{generalCardType}: {Name}; Level: {Level}";
 		}
 	}
 }
