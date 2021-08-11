@@ -23,6 +23,7 @@ namespace YuGiOhRandomizer
 				CardList = CardList.GetCardListInstance();
 				new DeckFileCreator().CreateAndSaveDecks();
 
+				Log.SaveToFile();
 				return (int)ExitCode.Success;
 			}
 

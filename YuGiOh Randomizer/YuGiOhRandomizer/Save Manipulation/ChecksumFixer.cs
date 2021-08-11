@@ -90,6 +90,7 @@ namespace YuGiOhRandomizer
 			var SaveContents = File.ReadAllBytes(Program.DeckSettings.SaveGameLocation);
 			SaveSignature(SaveContents);
 			File.WriteAllBytes(Program.DeckSettings.SaveGameLocation, SaveContents);
+			Log.WriteLine($"Updated player's save checksum: {Program.DeckSettings.SaveGameLocation}");
 		}
 
 		private static void SaveSignature(byte[] SaveBytes)

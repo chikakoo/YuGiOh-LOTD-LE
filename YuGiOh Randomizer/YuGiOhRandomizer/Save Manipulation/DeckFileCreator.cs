@@ -20,7 +20,10 @@ namespace YuGiOhRandomizer
 		public DeckFileCreator()
 		{
 			OpponentDeck = new RandomDeck();
+			Log.WriteDeck(OpponentDeck, "Opponent's Deck");
+
 			PlayerDeck = new RandomDeck();
+			Log.WriteDeck(OpponentDeck, "Player's Deck");
 		}
 
 		public void CreateAndSaveDecks()
@@ -67,6 +70,8 @@ namespace YuGiOhRandomizer
 
 			string path = $@"{Program.DeckSettings.PackingScriptLocation}\YGO_2020\decks.zib\{Program.DeckSettings.OpponentDeckToReplace}.ydc";
 			File.WriteAllBytes(path, ydcBytes);
+
+			Log.WriteLine($"Wrote oppoent's deck to: {path}");
 		}
 
 		/// <summary>
@@ -139,6 +144,7 @@ namespace YuGiOhRandomizer
 
 
 			File.WriteAllBytes(Program.DeckSettings.SaveGameLocation, savegame);
+			Log.WriteLine($"Wrote player's deck to: {Program.DeckSettings.SaveGameLocation}");
 		}
 
 		/// <summary>

@@ -1,6 +1,13 @@
 ﻿{
   "MainDeckSize":  { "min": 40, "max": 40 },
   "ExtraDeckSize":  { "min":  15, "max":  15 },
+
+  // Whether to add random cards to the appropriate deck if all tasks are complete but the deck size is not reached yet
+  // If this is off for the main deck, it means that the player deck cannot be used!
+  // Note that the game does actually let the opponent use a deck with less than 40 cards
+  "MainDeckAddRandomCardsIfNeeded":  true,
+  "ExtraDeckAddRandomCardsIfNeeded":  true,
+
   "DeckDistributionSettings":  [
 	// generalCardType: the type of card to generate - if left blank, assumes it's Monster (not recommended)
 	// - Valid values per deck listed here:
@@ -8,7 +15,16 @@
 	// - Extra Deck: Fusion, Synchro, Xyz, Link, RandomExtra
 	//
 	// levelRange: the range of monster levels to include - ignored for all other cards
+	//
 	// cardRange: the number of cards to include
+	//
+	// namePattern: only include cards that match the pattern (any string, case insensitive, with * as wildcard)
+	// - for instance, "man*" would match any card starting with "man"; "*cat*" would match any card containing "cat"
+	//
+	// allowLevel0IfNotInRange: if there is a level range, whether to include level 0 cards in the results
+	// - for instance, Link monsters would be included since they don't have a level
+	// - this is off by default
+	//
 	// excludedGeneralTypes: used ONLY with the two Random generalCardTypes 
 	// - excludes the listed generalCardTypes in the list when choosing random cards
 
@@ -53,7 +69,7 @@
 	  "cardRange": { "min": 9, "max": 9 } 
 	},
 
-	//Extra Deck:
+	// Extra Deck:
 	{ 
 	  "generalCardType":  "RandomExtra", 
 	  "cardRange": { "min": 15, "max": 15 },

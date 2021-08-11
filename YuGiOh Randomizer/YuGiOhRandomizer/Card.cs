@@ -176,7 +176,8 @@ namespace YuGiOhRandomizer
 		public override string ToString()
 		{
 			string generalCardType = Enum.GetName(typeof(GeneralCardTypes), GeneralCardType);
-			return $"{generalCardType}: {Name}; Level: {Level}";
+			string levelString = Level > 0 ? $"; Level: {Level}" : "";
+			return $"{generalCardType}: {Name}{levelString}";
 		}
 	}
 }

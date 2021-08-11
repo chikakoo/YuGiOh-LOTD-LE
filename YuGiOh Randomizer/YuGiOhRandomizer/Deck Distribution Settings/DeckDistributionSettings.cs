@@ -21,6 +21,12 @@ namespace YuGiOhRandomizer
 		[JsonProperty]
 		public Range ExtraDeckSize { get; set; }
 
+		[JsonProperty]
+		public bool MainDeckAddRandomCardsIfNeeded { get; set; }
+
+		[JsonProperty]
+		public bool ExtraDeckAddRandomCardsIfNeeded { get; set; }
+
 		/// <summary>
 		/// The list of tasks to execute
 		/// </summary>

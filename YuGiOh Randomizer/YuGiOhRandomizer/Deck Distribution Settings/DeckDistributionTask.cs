@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace YuGiOhRandomizer
 {
@@ -31,12 +32,24 @@ namespace YuGiOhRandomizer
 		[JsonProperty("levelRange")]
 		public Range MonsterLevelRange { get; set; }
 
+		/// <summary>
+		/// Whether we allow level 0 cards if they don't fall into the level range requiremebts
+		/// If this is true, then all Link monsters, for example, will be fair game even if there is a level range requirement
+		/// </summary>
+		[JsonProperty("allowLevel0IfNotInRange")]
+		public bool AllowLevel0IfNotInRange { get; set; }
 
 		/// <summary>
 		/// The number of cards to pick
 		/// </summary>
 		[JsonProperty]
 		public Range CardRange { get; set; }
+
+		/// <summary>
+		/// The pattern that the card name must match
+		/// </summary>
+		[JsonProperty]
+		public string NamePattern { get; set; }
 
 		/// <summary>
 		/// The type of deck this task is for
@@ -65,6 +78,21 @@ namespace YuGiOhRandomizer
 						throw new ArgumentException("Tried to get deck type for an unknown card type somehow!");
 				}
 			}
+		}
+
+		/// <summary>
+		/// Whether this task matches the given card name
+		/// </summary>
+		/// <param name="name">The name</param>
+		public bool MatchesCardName(string name)
+		{
+			if (string.IsNullOrWhiteSpace(NamePattern))
+			{
+				return true;
+			}
+
+			string regex = "^" + Regex.Escape(NamePattern.ToLower()).Replace("\\*", ".*") + "$";
+			return Regex.IsMatch(name.ToLower(), regex);
 		}
 
 		/// <summary>

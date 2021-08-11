@@ -83,14 +83,14 @@ namespace YuGiOhRandomizer
 		/// </summary>
 		public void Validate()
 		{
-			if (MainDeckSize != MainDeckCards.Count)
+			if (Program.DeckDistributionSettings.MainDeckAddRandomCardsIfNeeded && MainDeckSize != MainDeckCards.Count)
 			{
 				throw new Exception("Main deck not the expected size!");
 			}
 
-			if (ExtraDeckSize != ExtraDeckCards.Count)
+			if (Program.DeckDistributionSettings.ExtraDeckAddRandomCardsIfNeeded && ExtraDeckSize != ExtraDeckCards.Count)
 			{
-				throw new Exception("Main deck not the expected size!");
+				throw new Exception("Extra deck not the expected size!");
 			}
 
 			if (MainDeckCards.Any(x => x.DeckType != DeckTypes.Main))
@@ -110,6 +110,7 @@ namespace YuGiOhRandomizer
 		/// </summary>
 		private void Generate()
 		{
+			Log.WriteLine("New random deck creation started.");
 			SetDeckSizes();
 			AddCardsFromTasks();
 			AddAddtionalCards();
@@ -137,6 +138,7 @@ namespace YuGiOhRandomizer
 		{
 			foreach (DeckDistributionTask task in Program.DeckDistributionSettings.Tasks)
 			{
+				Log.WriteLine($"Adding cards from task: {task}");
 				AddCardsFromTask(task);
 			}
 		}
@@ -148,14 +150,16 @@ namespace YuGiOhRandomizer
 		public void AddAddtionalCards()
 		{
 			int mainDeckCardsRemaining = MainDeckSize - MainDeckCards.Count;
-			if (mainDeckCardsRemaining > 0)
+			if (Program.DeckDistributionSettings.MainDeckAddRandomCardsIfNeeded && mainDeckCardsRemaining > 0)
 			{
+				Log.WriteLine("Not enough tasks to fill main deck - adding random cards.");
 				AddCardsFromTask(DeckDistributionTask.GetTaskForRandomMainCards(mainDeckCardsRemaining));
 			}
 
 			int extraDeckCardsRemaining = ExtraDeckSize - ExtraDeckCards.Count;
-			if (extraDeckCardsRemaining > 0)
+			if (Program.DeckDistributionSettings.ExtraDeckAddRandomCardsIfNeeded && extraDeckCardsRemaining > 0)
 			{
+				Log.WriteLine("Not enough tasks to fill extra deck - adding random cards.");
 				AddCardsFromTask(DeckDistributionTask.GetTaskForRandomExtraCards(extraDeckCardsRemaining));
 			}
 		}
@@ -166,19 +170,18 @@ namespace YuGiOhRandomizer
 		/// <param name="task">The task</param>
 		private void AddCardsFromTask(DeckDistributionTask task)
 		{
-			List<Card> cardsToChooseFrom = GetCardsToChooseFrom(task);
-
-			int cardsToAdd = task.CardRange.GetRandomValue();
-			if (cardsToChooseFrom.Count < cardsToAdd)
-			{
-				throw new Exception("Could potentially run out of cards to add! Did you restrict your card list too much?");
-			}
-
 			List<Card> deck = task.DeckType == DeckTypes.Main ? MainDeckCards : ExtraDeckCards;
 			int maxSize = task.DeckType == DeckTypes.Main ? MainDeckSize : ExtraDeckSize;
+
+			int cardsToAdd = task.CardRange.GetRandomValue();
+			List<Card> cardsToChooseFrom = GetCardsToChooseFrom(task);
 			for (int i = 0; i < cardsToAdd && deck.Count < maxSize; i++)
 			{
-				AddCard(cardsToChooseFrom, deck);
+				if (!AddCard(cardsToChooseFrom, deck))
+				{
+					Log.WriteLine($"Could only add {i} card(s) for this task because too many cards were filtered.");
+					break;
+				}
 			}
 		}
 
@@ -193,47 +196,46 @@ namespace YuGiOhRandomizer
 				? Program.CardList.MainDeckCards
 				: Program.CardList.ExtraDeckCards;
 
-			// If we're picking a random card, no need to filter anything else!
-			if (task.GeneralCardType == GeneralCardTypes.RandomMain || task.GeneralCardType == GeneralCardTypes.RandomExtra)
+			// If we're picking a random card, we want to ignore the general card type (other filters are valid, though)
+			bool ignoreTypeCheck = task.GeneralCardType == GeneralCardTypes.RandomMain ||
+				task.GeneralCardType == GeneralCardTypes.RandomExtra;
+
+			// This check is only valid on random types, so let's not waste time doing it otherwise
+			if (ignoreTypeCheck)
 			{
-				return GetCardsToChooseFromForRandomType(task, cardsToChooseFrom);
+				cardsToChooseFrom = cardsToChooseFrom.Where(x => !task.ExcludedGeneralTypes.Contains(x.GeneralCardType)).ToList();
 			}
 
 			cardsToChooseFrom = cardsToChooseFrom.Where(x =>
-				x.GeneralCardType == task.GeneralCardType &&
+				(ignoreTypeCheck || x.GeneralCardType == task.GeneralCardType) &&
 				(
-					x.Level == 0 || task.MonsterLevelRange.Max == 0 || // Ignore all cards with a level of 0 or a limit of 0
-					task.MonsterLevelRange.IsInRange(x.Level)
-				)
+					task.MonsterLevelRange == null || // There is no level requirement set
+					(task.AllowLevel0IfNotInRange && (x.Level == 0)) || // Auto allow level 0s if the appropriate setting is on 
+					task.MonsterLevelRange.IsInRange(x.Level) // The level requirement is met
+				) &&
+				task.MatchesCardName(x.Name)
 			).ToList();
 
 			return cardsToChooseFrom;
 		}
 
 		/// <summary>
-		/// Gets the list of cards to choose from for one of the random GeneralCardTypes
-		/// </summary>
-		/// <param name="task">The current task</param>
-		/// <param name="baseList">The list to start with</param>
-		/// <returns>The filtered list - currently only excludes types, assuming that's populated</returns>
-		private List<Card> GetCardsToChooseFromForRandomType(DeckDistributionTask task, List<Card> baseList)
-		{
-			return baseList.Where(x => !task.ExcludedGeneralTypes.Contains(x.GeneralCardType)).ToList();
-		}
-
-		/// <summary>
 		/// Adds a card from the given list
 		/// Will respect the ban values
 		/// </summary>
-		/// <param name="listToChooseFrom">The list of cards to randomly choose from</param>
+		/// <param name="listToChooseFrom">The list of cards to randomly choose from - will be shuffled!</param>
 		/// <param name="deckToAddTo">The deck to add to</param>
-		private void AddCard(List<Card> listToChooseFrom, List<Card> deckToAddTo)
+		/// <returns>True if a card was added, false otherwise</returns>
+		private bool AddCard(List<Card> listToChooseFrom, List<Card> deckToAddTo)
 		{
-			Card cardToAdd = null;
-			do
+
+			listToChooseFrom.Shuffle();
+			Card cardToAdd = listToChooseFrom.FirstOrDefault(x => DoesCardPassBanCheck(x));
+
+			if (cardToAdd == null)
 			{
-				cardToAdd = RandomHelper.GetRandomValueFromList(listToChooseFrom);
-			} while (!DoesCardPassBanCheck(cardToAdd));
+				return false;
+			}
 
 			if (CardCount.ContainsKey(cardToAdd.Name))
 			{
@@ -246,6 +248,7 @@ namespace YuGiOhRandomizer
 			}
 
 			deckToAddTo.Add(cardToAdd);
+			return true;
 		}
 
 		/// <summary>
