@@ -27,6 +27,9 @@ namespace YuGiOhRandomizer
 		[JsonProperty]
 		public bool ExtraDeckAddRandomCardsIfNeeded { get; set; }
 
+		[JsonProperty]
+		public bool IgnoreBanList { get; set; }
+
 		/// <summary>
 		/// The list of tasks to execute
 		/// </summary>

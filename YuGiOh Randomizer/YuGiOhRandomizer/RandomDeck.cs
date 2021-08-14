@@ -288,22 +288,26 @@ namespace YuGiOhRandomizer
 		{
 			BanListTypes banType = card.BanInfo;
 			int maxCards = 3;
-			switch (banType)
+
+			if (!Program.DeckDistributionSettings.IgnoreBanList)
 			{
-				case BanListTypes.Unlimited:
-					maxCards = 3;
-					break;
-				case BanListTypes.SemiLimited:
-					maxCards = 2;
-					break;
-				case BanListTypes.Limited:
-					maxCards = 1;
-					break;
-				case BanListTypes.Banned:
-					return false;
-				default:
-					maxCards = 3;
-					break;
+				switch (banType)
+				{
+					case BanListTypes.Unlimited:
+						maxCards = 3;
+						break;
+					case BanListTypes.SemiLimited:
+						maxCards = 2;
+						break;
+					case BanListTypes.Limited:
+						maxCards = 1;
+						break;
+					case BanListTypes.Banned:
+						return false;
+					default:
+						maxCards = 3;
+						break;
+				}
 			}
 
 			if (!CardCount.ContainsKey(card.Name))

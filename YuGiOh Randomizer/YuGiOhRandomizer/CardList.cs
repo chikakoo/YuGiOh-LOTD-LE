@@ -41,7 +41,7 @@ namespace YuGiOhRandomizer
 		private void FilterCards()
 		{
 			All = All.Where(x =>
-				x.BanInfo != BanListTypes.Banned &&
+				(Program.DeckDistributionSettings.IgnoreBanList || x.BanInfo != BanListTypes.Banned) &&
 				!x.TempBan &&
 				x.Race != RaceTypes.Ritual &&
 				x.Type != CardTypes.ToonMonster &&

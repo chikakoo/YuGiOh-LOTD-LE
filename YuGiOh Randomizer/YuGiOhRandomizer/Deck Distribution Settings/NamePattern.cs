@@ -42,6 +42,13 @@ namespace YuGiOhRandomizer
 		public List<string> Patterns { get; set; } = new List<string>();
 
 		/// <summary>
+		/// Whether we should match the whole word in the card name
+		/// e.g. "Pot" matches "Pot of Greed", but not "Potion"
+		/// </summary>
+		[JsonProperty]
+		public bool MatchWholeWord { get; set; }
+
+		/// <summary>
 		/// The current index in the pattern list
 		/// </summary>
 		[JsonIgnore]
@@ -103,7 +110,10 @@ namespace YuGiOhRandomizer
 				return true; // In this case, there are no patterns!
 			}
 
-			string regex = "^" + Regex.Escape(CurrentPattern.ToLower()).Replace("\\*", ".*") + "$";
+			string regex = MatchWholeWord
+				? $"([^A-Za-z]|^){CurrentPattern.ToLower()}([^A-Za-z]|$)"
+				: $"^{Regex.Escape(CurrentPattern.ToLower()).Replace("\\*", ".*")}$";
+
 			return Regex.IsMatch(name.ToLower(), regex);
 		}
 
