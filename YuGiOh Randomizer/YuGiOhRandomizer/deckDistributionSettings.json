@@ -6,7 +6,7 @@
   // If this is off for the main deck, it means that the player deck cannot be used!
   // Note that the game does actually let the opponent use a deck with less than 40 cards
   "MainDeckAddRandomCardsIfNeeded":  true,
-  "ExtraDeckAddRandomCardsIfNeeded":  true,
+  "ExtraDeckAddRandomCardsIfNeeded":  false,
 
   "DeckDistributionSettings":  [
 	// generalCardType: the type of card to generate - if left blank, assumes it's Monster (not recommended)
@@ -18,7 +18,15 @@
 	//
 	// cardRange: the number of cards to include
 	//
-	// namePattern: only include cards that match the pattern (any string, case insensitive, with * as wildcard)
+	// namePattern: 
+	// - types:
+	//   - Round Robin: Goes through each name one time in a cycle, then loops back to the first one
+	//   - Fallback: Goes through each name until all cards are exhausted
+	// - patterns: An array of name patterns - only includes cards that match the pattern (any string, case insensitive, with * as wildcard)
+	//   - For instance, "man*" would match any card starting with "man"; "*cat*" would match any card containing "cat"
+	//
+	//
+	//
 	// - for instance, "man*" would match any card starting with "man"; "*cat*" would match any card containing "cat"
 	//
 	// allowLevel0IfNotInRange: if there is a level range, whether to include level 0 cards in the results
@@ -28,11 +36,14 @@
 	// excludedGeneralTypes: used ONLY with the two Random generalCardTypes 
 	// - excludes the listed generalCardTypes in the list when choosing random cards
 
+	// TODO: Change namePattern to be more general - deal with more than just names
+	// TODO: Reinstate the general namePattern property
+
 	// Main deck:
 	{ 
 	  "generalCardType": "Monster", 
 	  "levelRange":  { "min": 1, "max": 1 },
-	  "cardRange": { "min": 2, "max": 2 } 
+	  "cardRange": { "min": 2, "max": 2 }
 	},
 	{ 
 	  "generalCardType": "Monster", 

@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace YuGiOhRandomizer
 {
@@ -49,7 +48,7 @@ namespace YuGiOhRandomizer
 		/// The pattern that the card name must match
 		/// </summary>
 		[JsonProperty]
-		public string NamePattern { get; set; }
+		public NamePattern NamePattern { get; set; }
 
 		/// <summary>
 		/// The type of deck this task is for
@@ -81,18 +80,87 @@ namespace YuGiOhRandomizer
 		}
 
 		/// <summary>
-		/// Whether this task matches the given card name
+		/// Whether there's no more to do with the pattern
 		/// </summary>
-		/// <param name="name">The name</param>
-		public bool MatchesCardName(string name)
+		[JsonIgnore]
+		public bool IsPatternExhausted
 		{
-			if (string.IsNullOrWhiteSpace(NamePattern))
+			get
 			{
-				return true;
+				if (NamePattern == null)
+				{
+					return false; // There is no pattern!
+				}
+
+				return NamePattern.Completed;
+			}
+		}
+
+		/// <summary>
+		/// Set if there's no name pattern and the add card failed
+		/// </summary>
+		[JsonIgnore]
+		public bool ShouldExitNow { get; set; }
+
+		/// <summary>
+		/// Filter the card list based on the name pattern
+		/// </summary>
+		/// <param name="cardList"></param>
+		/// <returns></returns>
+		public List<Card> FilterNames(List<Card> cardList)
+		{
+			if (NamePattern == null)
+			{
+				return cardList;
 			}
 
-			string regex = "^" + Regex.Escape(NamePattern.ToLower()).Replace("\\*", ".*") + "$";
-			return Regex.IsMatch(name.ToLower(), regex);
+			return NamePattern.Filter(cardList);
+		}
+
+		/// <summary>
+		/// Calls when an attempt to add a card is made and adjusts things accordingly
+		/// </summary>
+		/// <param name="result">The result of the attempt</param>
+		public void OnAddCardAttempt(bool result)
+		{
+			if (result)
+			{
+				OnCardAdded();
+			}
+
+			else
+			{
+				OnCardAddFailure();
+			}
+		}
+
+		/// <summary>
+		/// Should be called when a card is added successfully
+		/// </summary>
+		private void OnCardAdded()
+		{
+			if (NamePattern != null)
+			{
+				NamePattern.OnCardAdded();
+			}
+
+		}
+
+		/// <summary>
+		/// Should be called when a card is NOT added successfully
+		/// Will set the exit flag if we don't have a name pattern
+		/// </summary>
+		private void OnCardAddFailure()
+		{
+			if (NamePattern != null)
+			{
+				NamePattern.OnCardAddFailure();
+			}
+
+			else
+			{
+				ShouldExitNow = true;
+			}
 		}
 
 		/// <summary>

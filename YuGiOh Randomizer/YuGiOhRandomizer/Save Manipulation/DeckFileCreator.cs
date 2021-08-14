@@ -23,7 +23,7 @@ namespace YuGiOhRandomizer
 			Log.WriteDeck(OpponentDeck, "Opponent's Deck");
 
 			PlayerDeck = new RandomDeck();
-			Log.WriteDeck(OpponentDeck, "Player's Deck");
+			Log.WriteDeck(PlayerDeck, "Player's Deck");
 		}
 
 		public void CreateAndSaveDecks()

@@ -173,20 +173,49 @@ namespace YuGiOhRandomizer
 			List<Card> deck = task.DeckType == DeckTypes.Main ? MainDeckCards : ExtraDeckCards;
 			int maxSize = task.DeckType == DeckTypes.Main ? MainDeckSize : ExtraDeckSize;
 
-			int cardsToAdd = task.CardRange.GetRandomValue();
+			int numberOfCardsToAdd = task.CardRange.GetRandomValue();
 			List<Card> cardsToChooseFrom = GetCardsToChooseFrom(task);
-			for (int i = 0; i < cardsToAdd && deck.Count < maxSize; i++)
+			List<Card> currentFilteredList;
+			for (int i = 0; i < numberOfCardsToAdd && deck.Count < maxSize; i++)
 			{
-				if (!AddCard(cardsToChooseFrom, deck))
+				currentFilteredList = task.FilterNames(cardsToChooseFrom);
+
+				bool cardAddResults = AddCard(currentFilteredList, deck);
+				string currentNameFilter = task.NamePattern?.CurrentPattern ?? "";
+				task.OnAddCardAttempt(cardAddResults);
+
+				if (task.IsPatternExhausted || task.ShouldExitNow)
 				{
-					Log.WriteLine($"Could only add {i} card(s) for this task because too many cards were filtered.");
+					if (task.IsPatternExhausted)
+					{
+						LogNameFilterError(currentNameFilter, i);
+					}
+					Log.WriteLine($"- Could only add {i} card(s) for this task because too many cards were filtered.");
 					break;
+				}
+
+				// Retry this index again - this means that the name filter failed, but we're trying the next pattern!
+				if (!cardAddResults)
+				{
+					if (task.NamePattern == null)
+					{
+						Log.WriteLine("- ERROR: Somehow, we're retrying to add a card when there's no pattern!");
+					}
+
+					LogNameFilterError(currentNameFilter, i);
+					i--;
 				}
 			}
 		}
 
+		private void LogNameFilterError(string currentNameFilter, int currentIndex)
+		{
+			Log.WriteLine($"- Name filter \"{currentNameFilter}\" exhausted at index {currentIndex}!");
+		}
+
 		/// <summary>
 		/// Get the filtered list of all cards to randomly choose from
+		/// This will NOT filter names, as that is done in the loop due to how the filtering works!
 		/// </summary>
 		/// <param name="task">The task to base the filters off of</param>
 		/// <returns>The card pool to randomly choose from</returns>
@@ -212,8 +241,7 @@ namespace YuGiOhRandomizer
 					task.MonsterLevelRange == null || // There is no level requirement set
 					(task.AllowLevel0IfNotInRange && (x.Level == 0)) || // Auto allow level 0s if the appropriate setting is on 
 					task.MonsterLevelRange.IsInRange(x.Level) // The level requirement is met
-				) &&
-				task.MatchesCardName(x.Name)
+				)
 			).ToList();
 
 			return cardsToChooseFrom;
