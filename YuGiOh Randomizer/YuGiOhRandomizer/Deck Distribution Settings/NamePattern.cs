@@ -49,6 +49,12 @@ namespace YuGiOhRandomizer
 		public bool MatchWholeWord { get; set; }
 
 		/// <summary>
+		/// Whether we should shuffle the patterns when starting or restarting the loop through them
+		/// </summary>
+		[JsonProperty]
+		public bool ShufflePatterns { get; set; }
+
+		/// <summary>
 		/// The current index in the pattern list
 		/// </summary>
 		[JsonIgnore]
@@ -81,6 +87,30 @@ namespace YuGiOhRandomizer
 			get
 			{
 				return !Patterns.Any() || CurrentIndex >= Patterns.Count;
+			}
+		}
+
+		/// <summary>
+		/// Constructor - shuffles the patterns if required
+		/// </summary>
+		/// <param name="shufflePatterns">Whether the shuffle patterns</param>
+		/// <param name="patterns">The patterns</param>
+		[JsonConstructor]
+		public NamePattern(bool shufflePatterns, List<string> patterns)
+		{
+			ShufflePatterns = shufflePatterns;
+			Patterns = patterns;
+			TryShufflePatterns();
+		}
+
+		/// <summary>
+		/// Shuffles the patterns if the setting is on
+		/// </summary>
+		public void TryShufflePatterns()
+		{
+			if (ShufflePatterns)
+			{
+				Patterns.Shuffle();
 			}
 		}
 
@@ -134,6 +164,7 @@ namespace YuGiOhRandomizer
 				if (CurrentIndex >= Patterns.Count)
 				{
 					CurrentIndex = 0;
+					TryShufflePatterns(); // We're starting over, so we should shuffle
 				}
 			}
 
@@ -172,6 +203,7 @@ namespace YuGiOhRandomizer
 
 				// If round robin, we just loop back around to the start again
 				CurrentIndex = 0;
+				TryShufflePatterns(); // We're starting over, so we should shuffle
 			}
 		}
 	}

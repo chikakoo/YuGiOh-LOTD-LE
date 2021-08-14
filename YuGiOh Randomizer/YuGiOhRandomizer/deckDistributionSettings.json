@@ -30,8 +30,10 @@
 	// - matchWholeWord: If set to true, then each pattern will check that the word is contained as its own word
 	//   - This will NOT replace wild characters - do not include them in the string!
 	//   - e.g. "Pot" will match "Pot of Greed" but not "Potion"
-	//
-	//
+	// - shufflePatterns: Shuffle the patterns so that they're chosen in a random order rather than the listed order
+	//   - Useful if you don't want it to be predictable
+	//   - For Round Robin, it's shuffled again once the end of the list of reached, so you won't know which dups you might
+	//     get, should it do more than one loop around
 	//
 	// - for instance, "man*" would match any card starting with "man"; "*cat*" would match any card containing "cat"
 	//
@@ -45,63 +47,52 @@
 	// TODO: Change namePattern to be more general - deal with more than just names
 	// TODO: Reinstate the general namePattern property
 
-	{ 
-	  "generalCardType": "RandomMain", 
-	  //"levelRange":  { "min": 1, "max": 1 },
-	  "cardRange": { "min": 40, "max": 40 },
-	  "namePattern":  {
-		"type": "Round Robin",
-		"patterns":  ["Pot"],
-		"matchWholeWord":  true
-	  }
-	}
-
 	// Main deck:
-	//{ 
-	//  "generalCardType": "Monster", 
-	//  "levelRange":  { "min": 1, "max": 1 },
-	//  "cardRange": { "min": 2, "max": 2 }
-	//},
-	//{ 
-	//  "generalCardType": "Monster", 
-	//  "levelRange":  { "min": 2, "max": 2 },
-	//  "cardRange": { "min": 3, "max": 3 } 
-	//},
-	//{ 
-	//  "generalCardType": "Monster", 
-	//  "levelRange":  { "min": 3, "max": 3 },
-	//  "cardRange": { "min": 4 , "max": 4 } 
-	//},
-	//{ 
-	//  "generalCardType":  "Monster", 
-	//  "levelRange":  { "min": 4, "max": 4 },
-	//  "cardRange": { "min": 9, "max": 9 } 
-	//},
-	//{ 
-	//  "generalCardType":  "Monster", 
-	//  "levelRange":  { "min": 5, "max": 6 },
-	//  "cardRange": { "min": 2, "max": 2 } 
-	//},
-	//{ 
-	//  "generalCardType":  "Monster", 
-	//  "levelRange":  { "min": 7, "max": 12 },
-	//  "cardRange": { "min": 2, "max": 2 } 
-	//},
+	{ 
+	  "generalCardType": "Monster", 
+	  "levelRange":  { "min": 1, "max": 1 },
+	  "cardRange": { "min": 2, "max": 2 }
+	},
+	{ 
+	  "generalCardType": "Monster", 
+	  "levelRange":  { "min": 2, "max": 2 },
+	  "cardRange": { "min": 3, "max": 3 } 
+	},
+	{ 
+	  "generalCardType": "Monster", 
+	  "levelRange":  { "min": 3, "max": 3 },
+	  "cardRange": { "min": 4 , "max": 4 } 
+	},
+	{ 
+	  "generalCardType":  "Monster", 
+	  "levelRange":  { "min": 4, "max": 4 },
+	  "cardRange": { "min": 9, "max": 9 } 
+	},
+	{ 
+	  "generalCardType":  "Monster", 
+	  "levelRange":  { "min": 5, "max": 6 },
+	  "cardRange": { "min": 2, "max": 2 } 
+	},
+	{ 
+	  "generalCardType":  "Monster", 
+	  "levelRange":  { "min": 7, "max": 12 },
+	  "cardRange": { "min": 2, "max": 2 } 
+	},
 
-	//{ 
-	//  "generalCardType":  "Spell", 
-	//  "cardRange": { "min": 9, "max": 9 } 
-	//},
-	//{ 
-	//  "generalCardType":  "Trap", 
-	//  "cardRange": { "min": 9, "max": 9 } 
-	//},
+	{ 
+	  "generalCardType":  "Spell", 
+	  "cardRange": { "min": 9, "max": 9 } 
+	},
+	{ 
+	  "generalCardType":  "Trap", 
+	  "cardRange": { "min": 9, "max": 9 } 
+	},
 
-	//// Extra Deck:
-	//{ 
-	//  "generalCardType":  "RandomExtra", 
-	//  "cardRange": { "min": 15, "max": 15 },
-	//  "excludedGeneralTypes": ["Fusion"]
-	//}
+	// Extra Deck:
+	{ 
+	  "generalCardType":  "RandomExtra", 
+	  "cardRange": { "min": 15, "max": 15 },
+	  "excludedGeneralTypes": ["Fusion"]
+	}
   ]
 }
