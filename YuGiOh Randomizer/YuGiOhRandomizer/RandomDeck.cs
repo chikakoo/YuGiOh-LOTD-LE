@@ -76,6 +76,7 @@ namespace YuGiOhRandomizer
 		{
 			Generate();
 			Validate();
+			Program.RefreshDeckDistributionSettings();
 		}
 
 		/// <summary>

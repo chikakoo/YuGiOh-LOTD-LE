@@ -33,5 +33,14 @@ namespace YuGiOhRandomizer
 				return (int)ExitCode.Error;
 			}
 		}
+
+		/// <summary>
+		/// Refreshes the settings - this ensures that any array entries removed from RoundRobin are brought back
+		/// This should be called between deck creations
+		/// </summary>
+		public static void RefreshDeckDistributionSettings()
+		{
+			DeckDistributionSettings = DeckDistributionSettings.GetSettingsInstance();
+		}
 	}
 }
