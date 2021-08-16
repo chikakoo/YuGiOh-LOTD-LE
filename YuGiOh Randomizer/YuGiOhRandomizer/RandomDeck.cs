@@ -182,7 +182,7 @@ namespace YuGiOhRandomizer
 				currentFilteredList = task.FilterNames(cardsToChooseFrom);
 
 				bool cardAddResults = AddCard(currentFilteredList, deck);
-				string currentNameFilter = task.NamePattern?.CurrentPattern ?? "";
+				string currentNameFilter = task.FilterSet?.CurrentFilter?.ToString() ?? "";
 				task.OnAddCardAttempt(cardAddResults);
 
 				if (task.IsPatternExhausted || task.ShouldExitNow)
@@ -198,7 +198,7 @@ namespace YuGiOhRandomizer
 				// Retry this index again - this means that the name filter failed, but we're trying the next pattern!
 				if (!cardAddResults)
 				{
-					if (task.NamePattern == null)
+					if (task.FilterSet == null)
 					{
 						Log.WriteLine("- ERROR: Somehow, we're retrying to add a card when there's no pattern!");
 					}
@@ -211,7 +211,7 @@ namespace YuGiOhRandomizer
 
 		private void LogNameFilterError(string currentNameFilter, int currentIndex)
 		{
-			Log.WriteLine($"- Name filter \"{currentNameFilter}\" exhausted at index {currentIndex}!");
+			Log.WriteLine($"- Filter with name string \"{currentNameFilter}\" exhausted at index {currentIndex}!");
 		}
 
 		/// <summary>

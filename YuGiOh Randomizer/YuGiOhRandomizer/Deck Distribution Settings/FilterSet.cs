@@ -3,16 +3,15 @@ using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
 
 namespace YuGiOhRandomizer
 {
-	public class NamePattern
+	public class FilterSet
 	{
 		/// <summary>
 		/// The name pattern enum
 		/// </summary>
-		public enum NamePatternType
+		public enum FilterSetType
 		{
 			/// <summary>
 			/// Goes through each value in the list one at a time, cycling around to the front when the end is reached
@@ -33,26 +32,19 @@ namespace YuGiOhRandomizer
 		/// </summary>
 		[JsonProperty]
 		[JsonConverter(typeof(StringEnumConverter))]
-		public NamePatternType Type { get; set; }
+		public FilterSetType Type { get; set; }
 
 		/// <summary>
-		/// The patterns - * are wildcards. e.g. "A*" will get all cards starting with "A"
+		/// A list of filters
 		/// </summary>
 		[JsonProperty]
-		public List<string> Patterns { get; set; } = new List<string>();
-
-		/// <summary>
-		/// Whether we should match the whole word in the card name
-		/// e.g. "Pot" matches "Pot of Greed", but not "Potion"
-		/// </summary>
-		[JsonProperty]
-		public bool MatchWholeWord { get; set; }
+		public List<Filter> Filters { get; set; } = new List<Filter>();
 
 		/// <summary>
 		/// Whether we should shuffle the patterns when starting or restarting the loop through them
 		/// </summary>
 		[JsonProperty]
-		public bool ShufflePatterns { get; set; }
+		public bool ShuffleFilters { get; set; }
 
 		/// <summary>
 		/// The current index in the pattern list
@@ -64,15 +56,15 @@ namespace YuGiOhRandomizer
 		/// The current pattern, computed from Patterns and CurrentIndex
 		/// </summary>
 		[JsonIgnore]
-		public string CurrentPattern
+		public Filter CurrentFilter
 		{
 			get
 			{
-				if (!Patterns.Any())
+				if (!Filters.Any())
 				{
 					return null;
 				}
-				return Patterns[CurrentIndex];
+				return Filters[CurrentIndex];
 			}
 		}
 
@@ -86,20 +78,20 @@ namespace YuGiOhRandomizer
 		{
 			get
 			{
-				return !Patterns.Any() || CurrentIndex >= Patterns.Count;
+				return !Filters.Any() || CurrentIndex >= Filters.Count;
 			}
 		}
 
 		/// <summary>
 		/// Constructor - shuffles the patterns if required
 		/// </summary>
-		/// <param name="shufflePatterns">Whether the shuffle patterns</param>
-		/// <param name="patterns">The patterns</param>
+		/// <param name="shuffleFilters">Whether the shuffle patterns</param>
+		/// <param name="filters">The filters</param>
 		[JsonConstructor]
-		public NamePattern(bool shufflePatterns, List<string> patterns)
+		public FilterSet(bool shuffleFilters, List<Filter> filters)
 		{
-			ShufflePatterns = shufflePatterns;
-			Patterns = patterns;
+			ShuffleFilters = shuffleFilters;
+			Filters = filters;
 			TryShufflePatterns();
 		}
 
@@ -108,9 +100,9 @@ namespace YuGiOhRandomizer
 		/// </summary>
 		public void TryShufflePatterns()
 		{
-			if (ShufflePatterns)
+			if (ShuffleFilters)
 			{
-				Patterns.Shuffle();
+				Filters.Shuffle();
 			}
 		}
 
@@ -121,30 +113,12 @@ namespace YuGiOhRandomizer
 		/// <returns>The filtered list</returns>
 		public List<Card> Filter(List<Card> cardList)
 		{
-			if (CurrentPattern == null)
+			if (CurrentFilter == null)
 			{
 				return cardList;
 			}
 
-			return cardList.Where(x => DoesCardNameMatch(x.Name)).ToList();
-		}
-
-		/// <summary>
-		/// Whether this task matches the given card name
-		/// </summary>
-		/// <param name="name">The name</param>
-		private bool DoesCardNameMatch(string name)
-		{
-			if (CurrentPattern == null)
-			{
-				return true; // In this case, there are no patterns!
-			}
-
-			string regex = MatchWholeWord
-				? $"([^A-Za-z]|^){CurrentPattern.ToLower()}([^A-Za-z]|$)"
-				: $"^{Regex.Escape(CurrentPattern.ToLower()).Replace("\\*", ".*")}$";
-
-			return Regex.IsMatch(name.ToLower(), regex);
+			return cardList.Where(x => CurrentFilter.DoesCardPassFilter(x)).ToList();
 		}
 
 		/// <summary>
@@ -158,10 +132,10 @@ namespace YuGiOhRandomizer
 		/// </summary
 		public void OnCardAddFailure()
 		{
-			if (Type == NamePatternType.RoundRobin)
+			if (Type == FilterSetType.RoundRobin)
 			{
-				Patterns.RemoveAt(CurrentIndex);
-				if (CurrentIndex >= Patterns.Count)
+				Filters.RemoveAt(CurrentIndex);
+				if (CurrentIndex >= Filters.Count)
 				{
 					CurrentIndex = 0;
 					TryShufflePatterns(); // We're starting over, so we should shuffle
@@ -181,7 +155,7 @@ namespace YuGiOhRandomizer
 		/// </summary>
 		public void OnCardAdded()
 		{
-			if (Type == NamePatternType.RoundRobin)
+			if (Type == FilterSetType.RoundRobin)
 			{
 				AdvanceIndex();
 			}
@@ -193,10 +167,10 @@ namespace YuGiOhRandomizer
 		private void AdvanceIndex()
 		{
 			CurrentIndex++;
-			if (CurrentIndex >= Patterns.Count)
+			if (CurrentIndex >= Filters.Count)
 			{
 				// If fallback, DO NOT move back to 0 so that Completed can be computed - we're done in that case!
-				if (Type == NamePatternType.Fallback)
+				if (Type == FilterSetType.Fallback)
 				{
 					return;
 				}

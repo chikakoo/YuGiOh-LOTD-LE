@@ -21,21 +21,29 @@
 	//
 	// cardRange: the number of cards to include
 	//
-	// namePattern: 
+	// filterSet: 
 	// - type:
 	//   - Round Robin: Goes through each name one time in a cycle, then loops back to the first one
 	//   - Fallback: Goes through each name until all cards are exhausted
-	// - patterns: An array of name patterns - only includes cards that match the pattern (any string, case insensitive, with * as wildcard)
-	//   - For instance, "man*" would match any card starting with "man"; "*cat*" would match any card containing "cat"
-	// - matchWholeWord: If set to true, then each pattern will check that the word is contained as its own word
-	//   - This will NOT replace wild characters - do not include them in the string!
-	//   - e.g. "Pot" will match "Pot of Greed" but not "Potion"
-	// - shufflePatterns: Shuffle the patterns so that they're chosen in a random order rather than the listed order
+
+	// - filters: an array of objects with the following properties - doesn't use them if left blank
+	//   - name: only includes cards that match the pattern (any string, case insensitive, with * as wildcard)
+	//     - For instance, "man*" would match any card starting with "man"; "*cat*" would match any card containing "cat"
+	//   - matchWholeWord: If set to true, then each name check will check that the word is contained as its own word
+	//     - This will NOT replace wild characters - do not include them in the string!
+	//     - e.g. "Pot" will match "Pot of Greed" but not "Potion"
+	//   - generalCardTypes: an array of allowed general card types - Monster, Spell, Trap
+	//   - levelRange: { min: #, max: #} - the range of levels allowed
+	//   - archetypes: an array of allowed archetypes
+	//   - types: an array of allowed types (TODO: document these, they are the "race" value)
+	//   - attributes: an array of allowed attributes (TODO: document these)
+	//   - attackRange: { min: #, max: #} - the range of attack points allowed
+	//   - defenseRange: { min: #, max: #} - the range of defense points allowed
+
+	// - shuffleFilters: Shuffle the filters so that they're chosen in a random order rather than the listed order
 	//   - Useful if you don't want it to be predictable
 	//   - For Round Robin, it's shuffled again once the end of the list of reached, so you won't know which dups you might
 	//     get, should it do more than one loop around
-	//
-	// - for instance, "man*" would match any card starting with "man"; "*cat*" would match any card containing "cat"
 	//
 	// allowLevel0IfNotInRange: if there is a level range, whether to include level 0 cards in the results
 	// - for instance, Link monsters would be included since they don't have a level
@@ -43,9 +51,6 @@
 	//
 	// excludedGeneralTypes: used ONLY with the two Random generalCardTypes 
 	// - excludes the listed generalCardTypes in the list when choosing random cards
-
-	// TODO: Change namePattern to be more general - deal with more than just names
-	// TODO: Reinstate the general namePattern property
 
 	// Main deck:
 	{ 

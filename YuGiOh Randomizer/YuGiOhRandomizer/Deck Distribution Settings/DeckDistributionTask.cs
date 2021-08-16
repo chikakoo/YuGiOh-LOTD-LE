@@ -48,7 +48,7 @@ namespace YuGiOhRandomizer
 		/// The pattern that the card name must match
 		/// </summary>
 		[JsonProperty]
-		public NamePattern NamePattern { get; set; }
+		public FilterSet FilterSet { get; set; }
 
 		/// <summary>
 		/// The type of deck this task is for
@@ -87,12 +87,12 @@ namespace YuGiOhRandomizer
 		{
 			get
 			{
-				if (NamePattern == null)
+				if (FilterSet == null)
 				{
 					return false; // There is no pattern!
 				}
 
-				return NamePattern.Completed;
+				return FilterSet.Completed;
 			}
 		}
 
@@ -109,12 +109,12 @@ namespace YuGiOhRandomizer
 		/// <returns></returns>
 		public List<Card> FilterNames(List<Card> cardList)
 		{
-			if (NamePattern == null)
+			if (FilterSet == null)
 			{
 				return cardList;
 			}
 
-			return NamePattern.Filter(cardList);
+			return FilterSet.Filter(cardList);
 		}
 
 		/// <summary>
@@ -139,9 +139,9 @@ namespace YuGiOhRandomizer
 		/// </summary>
 		private void OnCardAdded()
 		{
-			if (NamePattern != null)
+			if (FilterSet != null)
 			{
-				NamePattern.OnCardAdded();
+				FilterSet.OnCardAdded();
 			}
 
 		}
@@ -152,9 +152,9 @@ namespace YuGiOhRandomizer
 		/// </summary>
 		private void OnCardAddFailure()
 		{
-			if (NamePattern != null)
+			if (FilterSet != null)
 			{
-				NamePattern.OnCardAddFailure();
+				FilterSet.OnCardAddFailure();
 			}
 
 			else
