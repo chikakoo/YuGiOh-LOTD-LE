@@ -1,16 +1,51 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace YuGiOhRandomizer
 {
+	public enum NameFilterType
+	{
+		/// <summary>
+		/// (default)
+		/// Wild cards - replaces all * with a regex for one or more characters
+		/// So, *A* would contain all cards that have an "A" in them, anywhere
+		/// A* would be all cards that start with an A (or just ARE A)
+		/// </summary>
+		[EnumMember(Value = "Wildcard")]
+		Wildcard,
+
+		/// <summary>
+		/// Matches any cards where the string IS exactly one of the words in the name
+		/// Words are seaprated by non A-Z characters
+		/// </summary>
+		[EnumMember(Value = "MatchWholeWord")]
+		MatchWholeWord,
+
+		/// <summary>
+		/// Can be any regex
+		/// </summary>
+		[EnumMember(Value = "Regex")]
+		Regex,
+
+		/// <summary>
+		/// A regex that will match against any one word in the card name
+		/// Words are separated by non A-Z characters
+		/// </summary>
+		[EnumMember(Value = "RegexAnyWord")]
+		RegexAnyWord
+	}
+
 	public class Filter
 	{
 		[JsonProperty]
 		public string Name { get; set; }
 
 		[JsonProperty]
-		public bool MatchWholeWord { get; set; }
+		[JsonConverter(typeof(StringEnumConverter))]
+		public NameFilterType NameFilterType { get; set; }
 
 		[JsonProperty]
 		public List<GeneralCardTypes> GeneralCardTypes { get; set; }
@@ -62,12 +97,43 @@ namespace YuGiOhRandomizer
 			{
 				return true;
 			}
+			string patternName = Name.ToLower();
+			string regex = patternName;
 
-			string regex = MatchWholeWord
-				? $"([^A-Za-z]|^){Name.ToLower()}([^A-Za-z]|$)"
-				: $"^{Regex.Escape(Name.ToLower()).Replace("\\*", ".*")}$";
+			switch (NameFilterType)
+			{
+				case NameFilterType.Wildcard:
+					regex = GetPatternForWildcard(patternName);
+					break;
+				case NameFilterType.MatchWholeWord:
+					regex = GetPatternForWholeWord(patternName);
+					break;
+				case NameFilterType.RegexAnyWord:
+					regex = GetPatternForRegexAnyWord(patternName);
+					break;
+			}
 
 			return Regex.IsMatch(cardName.ToLower(), regex);
+		}
+
+		private string GetPatternForWildcard(string name)
+		{
+			return $"^{Regex.Escape(name).Replace("\\*", ".*")}$";
+		}
+
+		private string GetPatternForWholeWord(string name)
+		{
+			return $"([^a-z]|^){Regex.Escape(name)}([^a-z]|$)";
+		}
+
+		private string GetPatternForRegex(string name)
+		{
+			return name;
+		}
+
+		private string GetPatternForRegexAnyWord(string name)
+		{
+			return $"([^a-z]|^){name}([^a-z]|$)";
 		}
 
 		/// <summary>
