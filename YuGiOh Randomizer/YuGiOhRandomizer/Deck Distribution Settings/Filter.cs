@@ -54,6 +54,12 @@ namespace YuGiOhRandomizer
 		public Range LevelRange { get; set; }
 
 		[JsonProperty]
+		public bool? IsPendulum { get; set; }
+
+		[JsonProperty]
+		public bool? IsTuner { get; set; }
+
+		[JsonProperty]
 		public List<string> Archetypes { get; set; }
 
 		[JsonProperty]
@@ -78,11 +84,13 @@ namespace YuGiOhRandomizer
 			return DoesCardPassNameFilter(card) &&
 				(GeneralCardTypes == null || GeneralCardTypes.Contains(card.GeneralCardType)) &&
 				(LevelRange == null || LevelRange.IsInRange(card.Level)) &&
+				(IsPendulum == null || card.IsPendulum == IsPendulum) &&
+				(IsTuner == null || card.IsTuner == IsTuner) &&
 				(Archetypes == null || Archetypes.Contains(card.Archetype)) &&
 				(Types == null || Types.Contains(card.Race)) &&
 				(Attributes == null || Attributes.Contains(card.Attribute)) &&
 				(AttackRange == null || AttackRange.IsInRange(card.Attack)) &&
-				(DefenseRange == null || AttackRange.IsInRange(card.Defense));
+				(DefenseRange == null || DefenseRange.IsInRange(card.Defense));
 		}
 
 		/// <summary>

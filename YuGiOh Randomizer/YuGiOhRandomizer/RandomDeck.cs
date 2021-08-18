@@ -12,6 +12,11 @@ namespace YuGiOhRandomizer
 		private const int MaxExtraDeckSize = 15;
 
 		/// <summary>
+		/// The deck settings to use when generating this deck
+		/// </summary>
+		private DeckDistributionSetting DeckSettings { get; set; }
+
+		/// <summary>
 		/// Used to enforce the card limit
 		/// </summary>
 		private Dictionary<string, int> CardCount { get; set; } = new Dictionary<string, int>();
@@ -72,10 +77,14 @@ namespace YuGiOhRandomizer
 		/// <summary>
 		/// Constructor - generates the random deck based on the settings
 		/// </summary>
-		public RandomDeck()
+		public RandomDeck(DeckDistributionSetting deckSettings)
 		{
+			DeckSettings = deckSettings;
 			Generate();
 			Validate();
+
+			// The settings will be changed if values are removed from lists - so, refresh it for now
+			// TODO: do this in such a way that the original settings don't get modified
 			Program.RefreshDeckDistributionSettings();
 		}
 
@@ -84,12 +93,12 @@ namespace YuGiOhRandomizer
 		/// </summary>
 		public void Validate()
 		{
-			if (Program.DeckDistributionSettings.MainDeckAddRandomCardsIfNeeded && MainDeckSize != MainDeckCards.Count)
+			if (DeckSettings.MainDeckAddRandomCardsIfNeeded && MainDeckSize != MainDeckCards.Count)
 			{
 				throw new Exception("Main deck not the expected size!");
 			}
 
-			if (Program.DeckDistributionSettings.ExtraDeckAddRandomCardsIfNeeded && ExtraDeckSize != ExtraDeckCards.Count)
+			if (DeckSettings.ExtraDeckAddRandomCardsIfNeeded && ExtraDeckSize != ExtraDeckCards.Count)
 			{
 				throw new Exception("Extra deck not the expected size!");
 			}
@@ -124,10 +133,10 @@ namespace YuGiOhRandomizer
 		/// </summary>
 		private void SetDeckSizes()
 		{
-			int mainDeckSetingsSize = Program.DeckDistributionSettings.MainDeckSize.GetRandomValue();
+			int mainDeckSetingsSize = DeckSettings.MainDeckSize.GetRandomValue();
 			MainDeckSize = Math.Clamp(mainDeckSetingsSize, MinMainDeckSize, MaxMainDeckSize);
 
-			int extraDeckSettingsSize = Program.DeckDistributionSettings.ExtraDeckSize.GetRandomValue();
+			int extraDeckSettingsSize = DeckSettings.ExtraDeckSize.GetRandomValue();
 			ExtraDeckSize = Math.Clamp(extraDeckSettingsSize, MinExtraDeckSize, MaxExtraDeckSize);
 		}
 
@@ -137,9 +146,13 @@ namespace YuGiOhRandomizer
 		/// </summary>
 		public void AddCardsFromTasks()
 		{
-			foreach (DeckDistributionTask task in Program.DeckDistributionSettings.Tasks)
+			foreach (DeckCreationTask task in DeckSettings.DeckCreationTasks)
 			{
 				Log.WriteLine($"Adding cards from task: {task}");
+				if (task.CardRange == null)
+				{
+					throw new Exception("Error in deck JSON: Task found without a card range defined!");
+				}
 				AddCardsFromTask(task);
 			}
 		}
@@ -151,17 +164,17 @@ namespace YuGiOhRandomizer
 		public void AddAddtionalCards()
 		{
 			int mainDeckCardsRemaining = MainDeckSize - MainDeckCards.Count;
-			if (Program.DeckDistributionSettings.MainDeckAddRandomCardsIfNeeded && mainDeckCardsRemaining > 0)
+			if (DeckSettings.MainDeckAddRandomCardsIfNeeded && mainDeckCardsRemaining > 0)
 			{
 				Log.WriteLine("Not enough tasks to fill main deck - adding random cards.");
-				AddCardsFromTask(DeckDistributionTask.GetTaskForRandomMainCards(mainDeckCardsRemaining));
+				AddCardsFromTask(DeckCreationTask.GetTaskForRandomMainCards(mainDeckCardsRemaining));
 			}
 
 			int extraDeckCardsRemaining = ExtraDeckSize - ExtraDeckCards.Count;
-			if (Program.DeckDistributionSettings.ExtraDeckAddRandomCardsIfNeeded && extraDeckCardsRemaining > 0)
+			if (DeckSettings.ExtraDeckAddRandomCardsIfNeeded && extraDeckCardsRemaining > 0)
 			{
 				Log.WriteLine("Not enough tasks to fill extra deck - adding random cards.");
-				AddCardsFromTask(DeckDistributionTask.GetTaskForRandomExtraCards(extraDeckCardsRemaining));
+				AddCardsFromTask(DeckCreationTask.GetTaskForRandomExtraCards(extraDeckCardsRemaining));
 			}
 		}
 
@@ -169,7 +182,7 @@ namespace YuGiOhRandomizer
 		/// Adds the cards from the given task
 		/// </summary>
 		/// <param name="task">The task</param>
-		private void AddCardsFromTask(DeckDistributionTask task)
+		private void AddCardsFromTask(DeckCreationTask task)
 		{
 			List<Card> deck = task.DeckType == DeckTypes.Main ? MainDeckCards : ExtraDeckCards;
 			int maxSize = task.DeckType == DeckTypes.Main ? MainDeckSize : ExtraDeckSize;
@@ -200,7 +213,7 @@ namespace YuGiOhRandomizer
 				{
 					if (task.FilterSet == null)
 					{
-						Log.WriteLine("- ERROR: Somehow, we're retrying to add a card when there's no pattern!");
+						Log.WriteLine("- ERROR: Somehow, we're retrying to add a card when there's no filter set!");
 					}
 
 					LogNameFilterError(currentNameFilter, i);
@@ -220,7 +233,7 @@ namespace YuGiOhRandomizer
 		/// </summary>
 		/// <param name="task">The task to base the filters off of</param>
 		/// <returns>The card pool to randomly choose from</returns>
-		private List<Card> GetCardsToChooseFrom(DeckDistributionTask task)
+		private List<Card> GetCardsToChooseFrom(DeckCreationTask task)
 		{
 			List<Card> cardsToChooseFrom = task.DeckType == DeckTypes.Main
 				? Program.CardList.MainDeckCards
@@ -290,7 +303,7 @@ namespace YuGiOhRandomizer
 			BanListTypes banType = card.BanInfo;
 			int maxCards = 3;
 
-			if (!Program.DeckDistributionSettings.IgnoreBanList)
+			if (!DeckSettings.IgnoreBanList)
 			{
 				switch (banType)
 				{

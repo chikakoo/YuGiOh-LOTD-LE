@@ -4,12 +4,18 @@ using System.IO;
 
 namespace YuGiOh_Save_Deck_Extractor
 {
+	public enum ExitCode : int
+	{
+		Success = 0,
+		Error = 1
+	}
+
 	public class Program
 	{
 		private static Settings Settings { get; set; }
 		private static readonly int[] Empty = new int[0];
 
-		public static void Main(string[] args)
+		public static int Main(string[] args)
 		{
 			Settings = new Settings(args);
 
@@ -22,6 +28,8 @@ namespace YuGiOh_Save_Deck_Extractor
 			File.WriteAllBytes($"{Settings.PackingScriptLocation}\\YGO_2020\\decks.zib\\{Settings.DeckToReplace}.ydc", deckData);
 
 			Console.WriteLine("Data successfully extracted!");
+
+			return (int)ExitCode.Success;
 		}
 
 		/// <summary>

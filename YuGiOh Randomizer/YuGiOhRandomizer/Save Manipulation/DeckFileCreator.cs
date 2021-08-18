@@ -19,18 +19,82 @@ namespace YuGiOhRandomizer
 
 		public DeckFileCreator()
 		{
-			OpponentDeck = new RandomDeck();
-			Log.WriteDeck(OpponentDeck, "Opponent's Deck");
-
-			PlayerDeck = new RandomDeck();
-			Log.WriteDeck(PlayerDeck, "Player's Deck");
+			TryCreatePlayerDeck();
+			TryCreateOpponentDeck();
 		}
 
+		/// <summary>
+		/// Attempts to create the player's deck based on the settings
+		/// </summary>
+		private void TryCreatePlayerDeck()
+		{
+			PlayerDeck = TryCreateDeck(Program.DeckDistributionSettings.PlayerDeck, "Player's Deck");
+		}
+
+		/// <summary>
+		/// Attempts to create the opponent's deck based on the settings
+		/// </summary>
+		private void TryCreateOpponentDeck()
+		{
+			OpponentDeck = TryCreateDeck(Program.DeckDistributionSettings.OpponentDeck, "Opponent's Deck");
+		}
+
+		/// <summary>
+		/// Tries to create a deck
+		/// </summary>
+		/// <param name="settingsName">The settings for the deck to create</param>
+		/// <param name="whichDeck">The name of the deck (player or opponent, essentially)</param>
+		/// <returns></returns>
+		private RandomDeck TryCreateDeck(string settingsName, string whichDeck)
+		{
+			if (string.IsNullOrWhiteSpace(settingsName))
+			{
+				Log.WriteLine($"INFO: {whichDeck} not created due to a name that's null or whitespace.");
+				return null;
+			}
+
+			if (!Program.DeckDistributionSettings.DeckDistributionSettingsMap.ContainsKey(settingsName))
+			{
+				Log.WriteLine($"INFO: {whichDeck} not created - {settingsName} not found in the DeckDistributionSettingsMap!");
+				return null;
+			}
+
+			RandomDeck deck = new RandomDeck(Program.DeckDistributionSettings.DeckDistributionSettingsMap[settingsName]);
+			Log.WriteDeck(deck, whichDeck);
+			return deck;
+		}
+
+		/// <summary>
+		/// Creates and saves the decks, depending on which has been created
+		/// </summary>
 		public void CreateAndSaveDecks()
 		{
-			WriteOpponentDeckToDisk();
-			WritePlayerDeckToSaveData();
-			ChecksumFixer.FixGameSaveSignatureOnDisk();
+			CreateAndSavePlayerDeck();
+			CreateAndSaveOpponentDeck();
+
+		}
+
+		/// <summary>
+		/// Creates the player deck in the save data, and also updates the checksum so the save file works
+		/// </summary>
+		private void CreateAndSavePlayerDeck()
+		{
+			if (PlayerDeck != null)
+			{
+				WritePlayerDeckToSaveData();
+				ChecksumFixer.FixGameSaveSignatureOnDisk();
+			}
+		}
+
+		/// <summary>
+		/// Creates the opponent's deck to the appropriate path so it can be compiled into the game later
+		/// </summary>
+		private void CreateAndSaveOpponentDeck()
+		{
+			if (OpponentDeck != null)
+			{
+				WriteOpponentDeckToDisk();
+			}
 		}
 
 		/// <summary>

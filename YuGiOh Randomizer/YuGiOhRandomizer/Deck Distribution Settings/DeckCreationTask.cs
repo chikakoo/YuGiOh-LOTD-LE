@@ -9,7 +9,7 @@ namespace YuGiOhRandomizer
 	/// Represents one task for deck creation
 	/// For example, addding 5 monster cards that are level 4
 	/// </summary>
-	public class DeckDistributionTask
+	public class DeckCreationTask
 	{
 		/// <summary>
 		/// The general type of card
@@ -167,9 +167,9 @@ namespace YuGiOhRandomizer
 		/// Gets a task for random main deck cards
 		/// </summary>
 		/// <returns />
-		public static DeckDistributionTask GetTaskForRandomMainCards(int numberOfCards)
+		public static DeckCreationTask GetTaskForRandomMainCards(int numberOfCards)
 		{
-			return new DeckDistributionTask()
+			return new DeckCreationTask()
 			{
 				GeneralCardType = GeneralCardTypes.RandomMain,
 				CardRange = new Range(numberOfCards, numberOfCards)
@@ -180,9 +180,9 @@ namespace YuGiOhRandomizer
 		/// Gets a task for random extra deck cards
 		/// </summary>
 		/// <returns />
-		public static DeckDistributionTask GetTaskForRandomExtraCards(int numberOfCards)
+		public static DeckCreationTask GetTaskForRandomExtraCards(int numberOfCards)
 		{
-			return new DeckDistributionTask()
+			return new DeckCreationTask()
 			{
 				GeneralCardType = GeneralCardTypes.RandomExtra,
 				CardRange = new Range(numberOfCards, numberOfCards)

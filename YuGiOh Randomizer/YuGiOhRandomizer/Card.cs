@@ -144,6 +144,38 @@ namespace YuGiOhRandomizer
 		}
 
 		[JsonIgnore]
+		public bool IsPendulum
+		{
+			get
+			{
+				return new List<CardTypes>()
+				{
+					CardTypes.PendulumEffectMonster,
+					CardTypes.PendulumFlipEffectMonster,
+					CardTypes.PendulumNormalMonster,
+					CardTypes.PendulumTunerEffectMonster,
+					CardTypes.SynchroPendulumEffectMonster,
+					CardTypes.XYZPendulumEffectMonster
+				}.Contains(Type);
+			}
+		}
+
+		[JsonIgnore]
+		public bool IsTuner
+		{
+			get
+			{
+				return new List<CardTypes>()
+				{
+					CardTypes.NormalTunerMonster,
+					CardTypes.PendulumTunerEffectMonster,
+					CardTypes.SynchroTunerMonster,
+					CardTypes.TunerMonster
+				}.Contains(Type);
+			}
+		}
+
+		[JsonIgnore]
 		public DeckTypes DeckType
 		{
 			get

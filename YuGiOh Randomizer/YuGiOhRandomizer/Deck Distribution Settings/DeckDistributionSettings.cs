@@ -7,34 +7,28 @@ namespace YuGiOhRandomizer
 {
 	/// <summary>
 	/// Gets its data from deckDistributionSettings.json
-	/// 
 	/// A class that represents how decks will be created
-	/// It consists of an array of tasks to complete each time a random deck is created
-	/// If the main deck ends up contianing 60 cards (or 15 for extra decks), it will stop immediately
-	/// If it ends with less than 40, then it will randomly pick cards from there
 	/// </summary>
 	public class DeckDistributionSettings
 	{
 		[JsonProperty]
-		public Range MainDeckSize { get; set; }
+		public string PlayerDeck { get; set; }
 
 		[JsonProperty]
-		public Range ExtraDeckSize { get; set; }
+		public string OpponentDeck { get; set; }
 
+		/// <summary>
+		/// A dictionary of deck keys to their settings - that is, a map of keys to
+		/// various ways decks can be generated
+		/// </summary>
 		[JsonProperty]
-		public bool MainDeckAddRandomCardsIfNeeded { get; set; }
-
-		[JsonProperty]
-		public bool ExtraDeckAddRandomCardsIfNeeded { get; set; }
-
-		[JsonProperty]
-		public bool IgnoreBanList { get; set; }
+		public Dictionary<string, DeckDistributionSetting> DeckDistributionSettingsMap { get; set; }
 
 		/// <summary>
 		/// The list of tasks to execute
 		/// </summary>
 		[JsonProperty("DeckDistributionSettings")]
-		public List<DeckDistributionTask> Tasks { get; set; }
+		public List<DeckCreationTask> Tasks { get; set; }
 
 		/// <summary>
 		/// Get an instance of the settings object

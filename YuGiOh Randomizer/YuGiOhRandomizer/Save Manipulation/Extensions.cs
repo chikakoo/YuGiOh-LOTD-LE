@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace YuGiOhRandomizer
 {
 	/// <summary>
-	/// Taken from some github (TODO: Find it again and give credit)
+	/// Taken from the following file on github - full credits to thomasneff for this code:
+	/// https://github.com/thomasneff/YGOLOTDPatchDraft/blob/746b246fbf28888e39e562f17a40171ba0035d66/YGOLOTDPatchDraft/YGOLOTDPatchDraft.cs
 	/// </summary>
 	public static class Extensions
 	{

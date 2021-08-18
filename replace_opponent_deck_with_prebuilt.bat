@@ -20,6 +20,12 @@ set DeckToReplace=1classic_hard_bandit
 @echo Extracting deck data...
 dotnet "%DeckExtractorLocation%\YuGiOh Save Deck Extractor.dll" "%SteamSaveGameLocation%" "%ScriptLocation%" "%DeckToExtract%" "%DeckToReplace%"
 
+if %ERRORLEVEL% NEQ 0 (
+	@echo Deck insertion failed! See the output for details...
+	pause
+	exit
+)
+
 :: Once that's done, we'll compress the files into the .dat and .toc files
 @echo Compressing game data...
 python "%ScriptLocation%\YuGi_compress.py"
