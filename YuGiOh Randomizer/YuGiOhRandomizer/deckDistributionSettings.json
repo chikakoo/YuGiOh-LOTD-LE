@@ -73,11 +73,40 @@
   //    - For Round Robin, it's shuffled again once the end of the list of reached, so you won't know which dups you might
   //      get, should it do more than one loop around
 
-  "PlayerDeck": "generalDeck",
-  "OpponentDeck": "generalDeck",
+  "PlayerDeck": "General Deck",
+  "OpponentDeck": "General Deck",
 
   "DeckDistributionSettingsMap":  {
-	"generalDeck": {
+	// Example deck containing only cards that start with an "A"
+	"A Deck":  {
+	  "mainDeckSize": { "min": 40, "max": 40 },
+	  "extraDeckSize": { "min":  15, "max":  15 },
+
+	  "mainDeckAddRandomCardsIfNeeded": true,
+	  "extraDeckAddRandomCardsIfNeeded": false,
+
+	  "ignoreBanList": true,
+
+	  "deckCreationTasks":  [
+		{
+		  "generalCardType":  "RandomMain",
+		  "cardRange": { "min": 40, "max": 40 },
+		  "filterSet": {
+			"filters": [{ "name": "A*" }]
+		  }
+		},
+		{
+		  "generalCardType":  "RandomExtra",
+		  "cardRange": { "min": 15, "max": 15 },
+		  "filterSet": {
+			"filters": [{ "name": "A*" }]
+		  }
+		}
+	  ]
+	},
+
+	// A deck containing just a general distribution of cards
+	"General Deck": {
 	  "mainDeckSize": { "min": 40, "max": 40 },
 	  "extraDeckSize": { "min":  15, "max":  15 },
 

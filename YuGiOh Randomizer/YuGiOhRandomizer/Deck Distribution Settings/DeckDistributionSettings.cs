@@ -11,9 +11,15 @@ namespace YuGiOhRandomizer
 	/// </summary>
 	public class DeckDistributionSettings
 	{
+		/// <summary>
+		/// The key to the player's deck in the map
+		/// </summary>
 		[JsonProperty]
 		public string PlayerDeck { get; set; }
 
+		/// <summary>
+		/// The key to the opponent's deck in the map
+		/// </summary>
 		[JsonProperty]
 		public string OpponentDeck { get; set; }
 
@@ -23,12 +29,6 @@ namespace YuGiOhRandomizer
 		/// </summary>
 		[JsonProperty]
 		public Dictionary<string, DeckDistributionSetting> DeckDistributionSettingsMap { get; set; }
-
-		/// <summary>
-		/// The list of tasks to execute
-		/// </summary>
-		[JsonProperty("DeckDistributionSettings")]
-		public List<DeckCreationTask> Tasks { get; set; }
 
 		/// <summary>
 		/// Get an instance of the settings object

@@ -60,24 +60,23 @@ namespace YuGiOhRandomizer
 			}
 
 			RandomDeck deck = new RandomDeck(Program.DeckDistributionSettings.DeckDistributionSettingsMap[settingsName]);
-			Log.WriteDeck(deck, whichDeck);
+			Log.WriteDeck(deck, $"{whichDeck} - {settingsName}");
 			return deck;
 		}
 
 		/// <summary>
 		/// Creates and saves the decks, depending on which has been created
 		/// </summary>
-		public void CreateAndSaveDecks()
+		public void WriteDecks()
 		{
-			CreateAndSavePlayerDeck();
-			CreateAndSaveOpponentDeck();
-
+			WritePlayerDeck();
+			WriteOpponentDeck();
 		}
 
 		/// <summary>
-		/// Creates the player deck in the save data, and also updates the checksum so the save file works
+		/// Wries the player deck in the save data, and also updates the checksum so the save file works
 		/// </summary>
-		private void CreateAndSavePlayerDeck()
+		private void WritePlayerDeck()
 		{
 			if (PlayerDeck != null)
 			{
@@ -87,9 +86,9 @@ namespace YuGiOhRandomizer
 		}
 
 		/// <summary>
-		/// Creates the opponent's deck to the appropriate path so it can be compiled into the game later
+		/// Writes the opponent's deck to the appropriate path so it can be compiled into the game later
 		/// </summary>
-		private void CreateAndSaveOpponentDeck()
+		private void WriteOpponentDeck()
 		{
 			if (OpponentDeck != null)
 			{

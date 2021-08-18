@@ -21,7 +21,7 @@ namespace YuGiOhRandomizer
 				DeckDistributionSettings = DeckDistributionSettings.GetSettingsInstance();
 				DeckSettings = new DeckSettings(args);
 				CardList = CardList.GetCardListInstance();
-				new DeckFileCreator().CreateAndSaveDecks();
+				new DeckFileCreator().WriteDecks();
 
 				Log.SaveToFile();
 				return (int)ExitCode.Success;
