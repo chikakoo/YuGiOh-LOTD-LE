@@ -249,6 +249,8 @@ namespace YuGiOhRandomizer
 				cardsToChooseFrom = cardsToChooseFrom.Where(x => !task.ExcludedGeneralTypes.Contains(x.GeneralCardType)).ToList();
 			}
 
+			cardsToChooseFrom = cardsToChooseFrom.Where(x => task.CardTypes == null || task.CardTypes.Contains(x.Type)).ToList();
+
 			cardsToChooseFrom = cardsToChooseFrom.Where(x =>
 				(ignoreTypeCheck || x.GeneralCardType == task.GeneralCardType) &&
 				(

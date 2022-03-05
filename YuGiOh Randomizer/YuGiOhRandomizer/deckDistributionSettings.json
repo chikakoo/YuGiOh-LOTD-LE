@@ -1,180 +1,251 @@
 ﻿{
-  // How to configure decks:
-  // -----------------------
-  // Deck settings - this controls which deck is generated for the player/opponent. Set either value to
-  // null if you do not wish to generate a deck for them. Set either value to whatever key value you've created
-  // in the DeckDistributionSettingsMap to point their deck at those settings.
-  // > PlayerDeck: The set of settings to use. If not found, or null, it will NOT generate a player deck.
-  // > OpponentDeck: The set of settings to use. If not found, or null, it will NOT generate an opponent deck.
-  //
-  // >> DeckCreationSettingsMap: Key-value pairs from deck name to their settings, explained here
-  //
-  // > mainDeckSize: A range of possible deck sizes - hard limits from 40-60: { "min": #, "max": # }
-  // > mainDeckSize: A range of possible deck sizes - hard limits from 0-15: { "min": #, "max": # }
+	// How to configure decks:
+	// -----------------------
+	// Deck settings - this controls which deck is generated for the player/opponent. Set either value to
+	// null if you do not wish to generate a deck for them. Set either value to whatever key value you've created
+	// in the DeckDistributionSettingsMap to point their deck at those settings.
+	// > PlayerDeck: The set of settings to use. If not found, or null, it will NOT generate a player deck.
+	// > OpponentDeck: The set of settings to use. If not found, or null, it will NOT generate an opponent deck.
+	//
+	// >> DeckCreationSettingsMap: Key-value pairs from deck name to their settings, explained here
+	//
+	// > mainDeckSize: A range of possible deck sizes - hard limits from 40-60: { "min": #, "max": # }
+	// > mainDeckSize: A range of possible deck sizes - hard limits from 0-15: { "min": #, "max": # }
 
-  // Whether to add random cards to the appropriate deck if all tasks are complete but the deck size is not reached yet
-  // If this is off for the player deck, it means that it cannot be used, should the deck have less than 40 cards!
-  // Note that the game does actually let the opponent use a deck with less than 40 cards.
-  // > mainDeckAddRandomCardsIfNeeded: true or false
-  // > extraDeckAddRandomCardsIfNeeded: true or false
-  //
-  // > ignoreBanList: Ignore the ban list completely - allows 3 of every card (true or false)
-  //
-  //
-  // >> deckCreationTasks (an array of the following):
-  //
-  // The following properties are for defining deck creation tasks. They're gone through one-by-one until either
-  // the deck size is reached, or there's no more tasks. At the end, if the deck size isn't reached, it will add
-  // random cards to the deck, depending on the setting.
-  // 
-  // > generalCardType: the type of card to generate - if left blank, assumes it's Monster (not recommended)
-  // - Valid values per deck listed here:
-  // - Main Deck: Monster, Spell, Trap, RandomMain
-  // - Extra Deck: Fusion, Synchro, Xyz, Link, RandomExtra
-  //
-  // > levelRange: the range of monster levels to include - ignored for all other cards
-  //
-  // > cardRange: the number of cards to include
-  //
-  // > allowLevel0IfNotInRange: if there is a level range, whether to include level 0 cards in the results
-  // - for instance, Link monsters would be included since they don't have a level
-  // - this is off by default
-  //
-  // > excludedGeneralTypes: used ONLY with the two Random generalCardTypes 
-  // - excludes the listed generalCardTypes in the list when choosing random cards
-  //
-  // > filterSet: 
-  //  > type:
-  //   - Round Robin: Goes through each name one time in a cycle, then loops back to the first one
-  //   - Fallback: Goes through each name until all cards are exhausted
+	// Whether to add random cards to the appropriate deck if all tasks are complete but the deck size is not reached yet
+	// If this is off for the player deck, it means that it cannot be used, should the deck have less than 40 cards!
+	// Note that the game does actually let the opponent use a deck with less than 40 cards.
+	// > mainDeckAddRandomCardsIfNeeded: true or false
+	// > extraDeckAddRandomCardsIfNeeded: true or false
+	//
+	// > ignoreBanList: Ignore the ban list completely - allows 3 of every card (true or false)
+	//
+	//
+	// >> deckCreationTasks (an array of the following):
+	//
+	// The following properties are for defining deck creation tasks. They're gone through one-by-one until either
+	// the deck size is reached, or there's no more tasks. At the end, if the deck size isn't reached, it will add
+	// random cards to the deck, depending on the setting.
+	// 
+	// > generalCardType: the type of card to generate - if left blank, assumes it's Monster (not recommended)
+	// - Valid values per deck listed here:
+	// - Main Deck: Monster, Spell, Trap, RandomMain
+	// - Extra Deck: Fusion, Synchro, Xyz, Link, RandomExtra
+	//
+	// > excludedGeneralTypes: used ONLY with the two Random generalCardTypes 
+	// - excludes the listed generalCardTypes in the list when choosing random cards
+	//
+	// > cardTypes: The types of cards to include (TODO: document the exact values)
+	// - For example, the normal monster types would be: Normal Monster, Normal Tuner Monster, and Pendulum Normal Monster
+	//
+	// > levelRange: the range of monster levels to include - ignored for all other cards
+	//
+	// > cardRange: the number of cards to include
+	//
+	// > allowLevel0IfNotInRange: if there is a level range, whether to include level 0 cards in the results
+	// - for instance, Link monsters would be included since they don't have a level
+	// - this is off by default
+	//
+	// > filterSet: 
+	//  > type:
+	//   - Round Robin: Goes through each name one time in a cycle, then loops back to the first one
+	//   - Fallback: Goes through each name until all cards are exhausted
 
-  // > filters: an array of objects with the following properties - doesn't use them if left blank
-  //   > name: only includes cards that match the pattern (any string, case insensitive, with * as wildcard)
-  //    - For instance, "man*" would match any card starting with "man"; "*cat*" would match any card containing "cat"
-  //   > nameFilterType: enter one of these as a string:
-  //    - Wildcard (default): treats * as wildcards, meaning "one or more of any character"
-  //    - MatchWholeWord: checks the entry against all words in the card for an exact match
-  //                       a "word" is anything separated by a non-alphabetical character
-  //    - Regex: treats the entry as a regular expression, matching against the entire name
-  //    - RegexAnyWord: treats the entry as a regular expression, matching against each word individually
-  //                    is a match if any one of the words match
-  //   > generalCardTypes: an array of allowed general card types - Monster, Spell, Trap
-  //   > isPendulum: Whether the card is a pendulum card
-  //   > isTuner: Whether the card is a tuner card
-  //   > levelRange: { min: #, max: #} - the range of levels allowed
-  //   > archetypes: an array of allowed archetypes
-  //   > types: an array of allowed types (TODO: document these, they are the "race" value)
-  //   > attributes: an array of allowed attributes (TODO: document these)
-  //   > attackRange: { min: #, max: #} - the range of attack points allowed
-  //   > defenseRange: { min: #, max: #} - the range of defense points allowed
-  //
-  // > shuffleFilters: Shuffle the filters so that they're chosen in a random order rather than the listed order
-  //    - Useful if you don't want it to be predictable
-  //    - For Round Robin, it's shuffled again once the end of the list of reached, so you won't know which dups you might
-  //      get, should it do more than one loop around
+	// > filters: an array of objects with the following properties - doesn't use them if left blank
+	//   > name: only includes cards that match the pattern (any string, case insensitive, with * as wildcard)
+	//    - For instance, "man*" would match any card starting with "man"; "*cat*" would match any card containing "cat"
+	//   > nameFilterType: enter one of these as a string:
+	//    - Wildcard (default): treats * as wildcards, meaning "one or more of any character"
+	//    - MatchWholeWord: checks the entry against all words in the card for an exact match
+	//                       a "word" is anything separated by a non-alphabetical character
+	//    - Regex: treats the entry as a regular expression, matching against the entire name
+	//    - RegexAnyWord: treats the entry as a regular expression, matching against each word individually
+	//                    is a match if any one of the words match
+	//   > generalCardTypes: an array of allowed general card types - Monster, Spell, Trap
+	//   > cardTypes: The types of cards to include (TODO: document the exact values)
+	//    - For example, the normal monster types would be: Normal Monster, Normal Tuner Monster, and Pendulum Normal Monster
+	//   > isPendulum: Whether the card is a pendulum card
+	//   > isTuner: Whether the card is a tuner card
+	//   > levelRange: { min: #, max: #} - the range of levels allowed
+	//   > archetypes: an array of allowed archetypes
+	//   > types: an array of allowed types (TODO: document these, they are the "race" value)
+	//   > attributes: an array of allowed attributes (TODO: document these)
+	//   > attackRange: { min: #, max: #} - the range of attack points allowed
+	//   > defenseRange: { min: #, max: #} - the range of defense points allowed
+	//
+	// > shuffleFilters: Shuffle the filters so that they're chosen in a random order rather than the listed order
+	//    - Useful if you don't want it to be predictable
+	//    - For Round Robin, it's shuffled again once the end of the list of reached, so you won't know which dups you might
+	//      get, should it do more than one loop around
 
-  "PlayerDeck": "General Deck",
-  "OpponentDeck": "General Deck",
+	"PlayerDeck": "General Deck",
+	"OpponentDeck": "General Deck",
 
-  "DeckDistributionSettingsMap":  {
-	// Example deck containing only cards that start with an "A"
-	"A Deck":  {
-	  "mainDeckSize": { "min": 40, "max": 40 },
-	  "extraDeckSize": { "min":  15, "max":  15 },
+	"DeckDistributionSettingsMap": {
+		// Example deck containing only cards that start with an "A"
+		"A Deck": {
+			"mainDeckSize": {
+				"min": 40,
+				"max": 40
+			},
+			"extraDeckSize": {
+				"min": 15,
+				"max": 15
+			},
 
-	  "mainDeckAddRandomCardsIfNeeded": true,
-	  "extraDeckAddRandomCardsIfNeeded": false,
+			"mainDeckAddRandomCardsIfNeeded": true,
+			"extraDeckAddRandomCardsIfNeeded": false,
 
-	  "ignoreBanList": true,
+			"ignoreBanList": true,
 
-	  "deckCreationTasks":  [
-		{
-		  "generalCardType":  "RandomMain",
-		  "cardRange": { "min": 40, "max": 40 },
-		  "filterSet": {
-			"filters": [{ "name": "A*" }]
-		  }
-		},
-		{
-		  "generalCardType":  "RandomExtra",
-		  "cardRange": { "min": 15, "max": 15 },
-		  "filterSet": {
-			"filters": [{ "name": "A*" }]
-		  }
-		}
-	  ]
-	},
-
-	// A deck containing just a general distribution of cards
-	"General Deck": {
-	  "mainDeckSize": { "min": 40, "max": 40 },
-	  "extraDeckSize": { "min":  15, "max":  15 },
-
-	  "mainDeckAddRandomCardsIfNeeded": true,
-	  "extraDeckAddRandomCardsIfNeeded": false,
-
-	  "ignoreBanList": true,
-
-	  "deckCreationTasks": [
-		{
-		  "generalCardType": "Synchro",
-		  "cardRange": { "min": 2, "max": 2 },
-		  "filterSet": {
-			"filters": [
-			  { "types": ["Zombie"] }
+			"deckCreationTasks": [
+				{
+					"generalCardType": "RandomMain",
+					"cardRange": {
+						"min": 40,
+						"max": 40
+					},
+					"filterSet": {
+						"filters": [ { "name": "A*" } ]
+					}
+				},
+				{
+					"generalCardType": "RandomExtra",
+					"cardRange": {
+						"min": 15,
+						"max": 15
+					},
+					"filterSet": {
+						"filters": [ { "name": "A*" } ]
+					}
+				}
 			]
-		  }
 		},
 
-		// Main deck:
-		{ 
-		  "generalCardType": "Monster", 
-		  "levelRange": { "min": 1, "max": 1 },
-		  "cardRange": { "min": 2, "max": 2 }
-		},
-		{ 
-		  "generalCardType": "Monster", 
-		  "levelRange": { "min": 2, "max": 2 },
-		  "cardRange": { "min": 3, "max": 3 } 
-		},
-		{ 
-		  "generalCardType": "Monster", 
-		  "levelRange": { "min": 3, "max": 3 },
-		  "cardRange": { "min": 4 , "max": 4 } 
-		},
-		{ 
-		  "generalCardType": "Monster", 
-		  "levelRange": { "min": 4, "max": 4 },
-		  "cardRange": { "min": 9, "max": 9 } 
-		},
-		{ 
-		  "generalCardType": "Monster", 
-		  "levelRange": { "min": 5, "max": 6 },
-		  "cardRange": { "min": 2, "max": 2 } 
-		},
-		{ 
-		  "generalCardType": "Monster", 
-		  "levelRange": { "min": 7, "max": 12 },
-		  "cardRange": { "min": 2, "max": 2 } 
-		},
+		// A deck containing just a general distribution of cards
+		"General Deck": {
+			"mainDeckSize": {
+				"min": 40,
+				"max": 40
+			},
+			"extraDeckSize": {
+				"min": 15,
+				"max": 15
+			},
 
-		{ 
-		  "generalCardType":  "Spell", 
-		  "cardRange": { "min": 9, "max": 9 } 
-		},
-		{ 
-		  "generalCardType": "Trap", 
-		  "cardRange": { "min": 9, "max": 9 } 
-		},
+			"mainDeckAddRandomCardsIfNeeded": true,
+			"extraDeckAddRandomCardsIfNeeded": false,
 
-		// Extra Deck:
-		{ 
-		  "generalCardType": "RandomExtra", 
-		  "cardRange": { "min": 15, "max": 15 },
-		  "excludedGeneralTypes": ["Fusion"]
+			"ignoreBanList": true,
+
+			"deckCreationTasks": [
+				{
+					"generalCardType": "Synchro",
+					"cardRange": {
+						"min": 2,
+						"max": 2
+					},
+					"filterSet": {
+						"filters": [
+							{ "types": [ "Zombie" ] }
+						]
+					}
+				},
+
+				// Main deck:
+				{
+					"generalCardType": "Monster",
+					"levelRange": {
+						"min": 1,
+						"max": 1
+					},
+					"cardRange": {
+						"min": 2,
+						"max": 2
+					}
+				},
+				{
+					"generalCardType": "Monster",
+					"levelRange": {
+						"min": 2,
+						"max": 2
+					},
+					"cardRange": {
+						"min": 3,
+						"max": 3
+					}
+				},
+				{
+					"generalCardType": "Monster",
+					"levelRange": {
+						"min": 3,
+						"max": 3
+					},
+					"cardRange": {
+						"min": 4,
+						"max": 4
+					}
+				},
+				{
+					"generalCardType": "Monster",
+					"levelRange": {
+						"min": 4,
+						"max": 4
+					},
+					"cardRange": {
+						"min": 9,
+						"max": 9
+					}
+				},
+				{
+					"generalCardType": "Monster",
+					"levelRange": {
+						"min": 5,
+						"max": 6
+					},
+					"cardRange": {
+						"min": 2,
+						"max": 2
+					}
+				},
+				{
+					"generalCardType": "Monster",
+					"levelRange": {
+						"min": 7,
+						"max": 12
+					},
+					"cardRange": {
+						"min": 2,
+						"max": 2
+					}
+				},
+
+				{
+					"generalCardType": "Spell",
+					"cardRange": {
+						"min": 9,
+						"max": 9
+					}
+				},
+				{
+					"generalCardType": "Trap",
+					"cardRange": {
+						"min": 9,
+						"max": 9
+					}
+				},
+
+				// Extra Deck:
+				{
+					"generalCardType": "RandomExtra",
+					"cardRange": {
+						"min": 15,
+						"max": 15
+					},
+					"excludedGeneralTypes": [ "Fusion" ]
+				}
+			]
 		}
-	  ]
 	}
-  }
 }
  

@@ -51,6 +51,9 @@ namespace YuGiOhRandomizer
 		public List<GeneralCardTypes> GeneralCardTypes { get; set; }
 
 		[JsonProperty]
+		public List<CardTypes> CardTypes { get; set; }
+
+		[JsonProperty]
 		public Range LevelRange { get; set; }
 
 		[JsonProperty]
@@ -83,6 +86,7 @@ namespace YuGiOhRandomizer
 		{
 			return DoesCardPassNameFilter(card) &&
 				(GeneralCardTypes == null || GeneralCardTypes.Contains(card.GeneralCardType)) &&
+				(CardTypes == null || CardTypes.Contains(card.Type)) &&
 				(LevelRange == null || LevelRange.IsInRange(card.Level)) &&
 				(IsPendulum == null || card.IsPendulum == IsPendulum) &&
 				(IsTuner == null || card.IsTuner == IsTuner) &&

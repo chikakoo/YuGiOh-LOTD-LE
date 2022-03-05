@@ -25,6 +25,12 @@ namespace YuGiOhRandomizer
 		public List<GeneralCardTypes> ExcludedGeneralTypes { get; set; } = new List<GeneralCardTypes>();
 
 		/// <summary>
+		/// A list of the specific card types to include
+		/// </summary>
+		[JsonProperty]
+		public List<CardTypes> CardTypes { get; set; }
+
+		/// <summary>
 		/// The level range to grab for monsters
 		/// ONLY useful for monsters
 		/// </summary>
