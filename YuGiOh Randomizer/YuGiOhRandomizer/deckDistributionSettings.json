@@ -21,7 +21,7 @@
 	// > ignoreBanList: Ignore the ban list completely - allows 3 of every card (true or false)
 	//
 	//
-	// >> deckCreationTasks (an array of the following):
+	// >> deckCreationTasks (an array of the following object):
 	//
 	// The following properties are for defining deck creation tasks. They're gone through one-by-one until either
 	// the deck size is reached, or there's no more tasks. At the end, if the deck size isn't reached, it will add
@@ -32,26 +32,23 @@
 	// - Main Deck: Monster, Spell, Trap, RandomMain
 	// - Extra Deck: Fusion, Synchro, Xyz, Link, RandomExtra
 	//
-	// > excludedGeneralTypes: used ONLY with the two Random generalCardTypes 
-	// - excludes the listed generalCardTypes in the list when choosing random cards
+	// > cardRange: the number of cards to include (ALL RANGES are an object with a min and a max value)
 	//
-	// > cardTypes: The types of cards to include (TODO: document the exact values)
-	// - For example, the normal monster types would be: Normal Monster, Normal Tuner Monster, and Pendulum Normal Monster
-	//
-	// > levelRange: the range of monster levels to include - ignored for all other cards
-	//
-	// > cardRange: the number of cards to include
-	//
-	// > allowLevel0IfNotInRange: if there is a level range, whether to include level 0 cards in the results
-	// - for instance, Link monsters would be included since they don't have a level
-	// - this is off by default
+	// > mainFilter: The main filter that will be ran through for the entire deck
+	//   - see the "filters" object below for the allowed properties
 	//
 	// > filterSet: 
-	//  > type:
-	//   - Round Robin: Goes through each name one time in a cycle, then loops back to the first one
-	//   - Fallback: Goes through each name until all cards are exhausted
-
+	//  - Consists of three values:
+	//    > type:
+	//     - Round Robin (default): Goes through each name one time in a cycle, then loops back to the first one
+	//     - Fallback: Goes through each name until all cards are exhausted
+	//  - mainFilter: A single main filter that will be ran through once, and which all future filters will be based on
+	//  - filters: The array of filters that will be ran through, which the types listed above run against.
+	//    > See below for documentation on filling out the filters (main and filters use the same object)
+	//
 	// > filters: an array of objects with the following properties - doesn't use them if left blank
+	//   > generalCardType: same as above - can be used to specify a specific type if the main type is RandomMain, for instance
+	//   > excludedGeneralTypes: excludes the listed generalCardTypes in the list when choosing random cards
 	//   > name: only includes cards that match the pattern (any string, case insensitive, with * as wildcard)
 	//    - For instance, "man*" would match any card starting with "man"; "*cat*" would match any card containing "cat"
 	//   > nameFilterType: enter one of these as a string:
@@ -62,11 +59,15 @@
 	//    - RegexAnyWord: treats the entry as a regular expression, matching against each word individually
 	//                    is a match if any one of the words match
 	//   > generalCardTypes: an array of allowed general card types - Monster, Spell, Trap
+	//     - DO NOT use RandomMain and RandomExtra at this level!
 	//   > cardTypes: The types of cards to include (TODO: document the exact values)
-	//    - For example, the normal monster types would be: Normal Monster, Normal Tuner Monster, and Pendulum Normal Monster
 	//   > isPendulum: Whether the card is a pendulum card
 	//   > isTuner: Whether the card is a tuner card
+	//   > isNormal: Whether the card is a normal monster (Normal Monster, Normal Tuner Monster, and Pendulum Normal Monster) 
 	//   > levelRange: { min: #, max: #} - the range of levels allowed
+	//   > allowLevel0IfNotInRange: if there is a level range, whether to include level 0 cards in the results
+	//			- for instance, Link monsters would be included since they don't have a level
+	//			- this is off by default
 	//   > archetypes: an array of allowed archetypes
 	//   > types: an array of allowed types (TODO: document these, they are the "race" value)
 	//   > attributes: an array of allowed attributes (TODO: document these)
@@ -106,7 +107,7 @@
 						"max": 40
 					},
 					"filterSet": {
-						"filters": [ { "name": "A*" } ]
+						"mainFilter": { "name": "A*" }
 					}
 				},
 				{
@@ -116,7 +117,7 @@
 						"max": 15
 					},
 					"filterSet": {
-						"filters": [ { "name": "A*" } ]
+						"mainFilter": { "name": "A*" }
 					}
 				}
 			]
@@ -139,84 +140,95 @@
 			"ignoreBanList": true,
 
 			"deckCreationTasks": [
+				// Main deck:
 				{
-					"generalCardType": "Synchro",
+					"generalCardType": "Monster",
 					"cardRange": {
 						"min": 2,
 						"max": 2
 					},
 					"filterSet": {
-						"filters": [
-							{ "types": [ "Zombie" ] }
-						]
-					}
-				},
-
-				// Main deck:
-				{
-					"generalCardType": "Monster",
-					"levelRange": {
-						"min": 1,
-						"max": 1
-					},
-					"cardRange": {
-						"min": 2,
-						"max": 2
+						"mainFilter": {
+							"levelRange": {
+								"min": 1,
+								"max": 1
+							}
+						}
 					}
 				},
 				{
 					"generalCardType": "Monster",
-					"levelRange": {
-						"min": 2,
-						"max": 2
-					},
 					"cardRange": {
 						"min": 3,
 						"max": 3
+					},
+					"filterSet": {
+						"mainFilter": {
+							"levelRange": {
+								"min": 2,
+								"max": 2
+							}
+						}
 					}
 				},
 				{
 					"generalCardType": "Monster",
-					"levelRange": {
-						"min": 3,
-						"max": 3
-					},
 					"cardRange": {
 						"min": 4,
 						"max": 4
+					},
+					"filterSet": {
+						"mainFilter": {
+							"levelRange": {
+								"min": 3,
+								"max": 3
+							}
+						}
 					}
 				},
 				{
 					"generalCardType": "Monster",
-					"levelRange": {
-						"min": 4,
-						"max": 4
-					},
 					"cardRange": {
 						"min": 9,
 						"max": 9
+					},
+					"filterSet": {
+						"mainFilter": {
+							"levelRange": {
+								"min": 4,
+								"max": 4
+							}
+						}
 					}
 				},
 				{
 					"generalCardType": "Monster",
-					"levelRange": {
-						"min": 5,
-						"max": 6
-					},
 					"cardRange": {
 						"min": 2,
 						"max": 2
+					},
+					"filterSet": {
+						"mainFilter": {
+							"levelRange": {
+								"min": 5,
+								"max": 6
+							}
+						}
 					}
 				},
 				{
 					"generalCardType": "Monster",
-					"levelRange": {
-						"min": 7,
-						"max": 12
-					},
 					"cardRange": {
 						"min": 2,
 						"max": 2
+					},
+					"filterSet": {
+						"mainFilter": {
+							"levelRange": {
+								"min": 7,
+								"max": 12
+							}
+						}
 					}
 				},
 
@@ -242,7 +254,9 @@
 						"min": 15,
 						"max": 15
 					},
-					"excludedGeneralTypes": [ "Fusion" ]
+					"filterSet": {
+						"mainFilter": { "excludedGeneralTypes": [ "Fusion" ] }
+					}
 				}
 			]
 		}

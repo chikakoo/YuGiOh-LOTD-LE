@@ -35,6 +35,12 @@ namespace YuGiOhRandomizer
 		public FilterSetType Type { get; set; }
 
 		/// <summary>
+		/// The main filter to apply to the deck - this will be the thing that all cards
+		/// are ran through before applying any other filters
+		/// </summary>
+		public Filter MainFilter { get; set; }
+
+		/// <summary>
 		/// A list of filters
 		/// </summary>
 		[JsonProperty]
@@ -60,7 +66,7 @@ namespace YuGiOhRandomizer
 		{
 			get
 			{
-				if (!Filters.Any())
+				if (Filters == default || !Filters.Any())
 				{
 					return null;
 				}
@@ -78,18 +84,20 @@ namespace YuGiOhRandomizer
 		{
 			get
 			{
-				return !Filters.Any() || CurrentIndex >= Filters.Count;
+				return Filters == default || !Filters.Any() || CurrentIndex >= Filters.Count;
 			}
 		}
 
 		/// <summary>
 		/// Constructor - shuffles the patterns if required
 		/// </summary>
-		/// <param name="shuffleFilters">Whether the shuffle patterns</param>
+		/// <param name="mainFilters">The main filters to apply to the deck before anything else</param>
+		/// <param name="shuffleFilters">Whether to the shuffle patterns</param>
 		/// <param name="filters">The filters</param>
 		[JsonConstructor]
-		public FilterSet(bool shuffleFilters, List<Filter> filters)
+		public FilterSet(Filter mainFilters, bool shuffleFilters, List<Filter> filters)
 		{
+			MainFilter = mainFilters;
 			ShuffleFilters = shuffleFilters;
 			Filters = filters;
 			TryShufflePatterns();
@@ -105,6 +113,21 @@ namespace YuGiOhRandomizer
 				Filters.Shuffle();
 			}
 		}
+
+		/// <summary>
+		/// Applies the main filter to the given list of cards
+		/// </summary>
+		/// <param name="cardList"></param>
+		/// <returns>The filtered list</returns>
+		public List<Card> ApplyMainFilter(List<Card> cardList)
+        {
+			if (MainFilter == null)
+            {
+				return cardList;
+            }
+
+			return cardList.Where(x => MainFilter.DoesCardPassFilter(x)).ToList();
+        }
 
 		/// <summary>
 		/// Filters the list of cards down based on the current pattern
@@ -129,11 +152,17 @@ namespace YuGiOhRandomizer
 		/// 
 		/// Fallback:
 		/// Advances the index by 1 to try the next pattern
-		/// </summary
-		public void OnCardAddFailure()
+		/// </summary>
+		/// <returns>Whether we should force exit</returns>
+		public bool OnCardAddFailure()
 		{
 			if (Type == FilterSetType.RoundRobin)
 			{
+				if (Filters == default)
+                {
+					return true;
+                }
+
 				Filters.RemoveAt(CurrentIndex);
 				if (CurrentIndex >= Filters.Count)
 				{
@@ -146,6 +175,8 @@ namespace YuGiOhRandomizer
 			{
 				AdvanceIndex();
 			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -167,7 +198,7 @@ namespace YuGiOhRandomizer
 		private void AdvanceIndex()
 		{
 			CurrentIndex++;
-			if (CurrentIndex >= Filters.Count)
+			if (Filters != default && CurrentIndex >= Filters.Count)
 			{
 				// If fallback, DO NOT move back to 0 so that Completed can be computed - we're done in that case!
 				if (Type == FilterSetType.Fallback)

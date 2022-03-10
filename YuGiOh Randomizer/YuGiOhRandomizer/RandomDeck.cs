@@ -95,12 +95,12 @@ namespace YuGiOhRandomizer
 		{
 			if (DeckSettings.MainDeckAddRandomCardsIfNeeded && MainDeckSize != MainDeckCards.Count)
 			{
-				throw new Exception("Main deck not the expected size!");
+				throw new Exception($"Main deck not the expected size: {MainDeckCards.Count} / {MainDeckSize}");
 			}
 
 			if (DeckSettings.ExtraDeckAddRandomCardsIfNeeded && ExtraDeckSize != ExtraDeckCards.Count)
 			{
-				throw new Exception("Extra deck not the expected size!");
+				throw new Exception($"Extra deck not the expected size:  {ExtraDeckCards.Count} / {ExtraDeckSize}");
 			}
 
 			if (MainDeckCards.Any(x => x.DeckType != DeckTypes.Main))
@@ -122,6 +122,7 @@ namespace YuGiOhRandomizer
 		{
 			Log.WriteLine("New random deck creation started.");
 			SetDeckSizes();
+
 			AddCardsFromTasks();
 			AddAddtionalCards();
 			MainDeckCards = MainDeckCards.OrderBy(x => x.Name).ToList();
@@ -167,14 +168,14 @@ namespace YuGiOhRandomizer
 			if (DeckSettings.MainDeckAddRandomCardsIfNeeded && mainDeckCardsRemaining > 0)
 			{
 				Log.WriteLine("Not enough tasks to fill main deck - adding random cards.");
-				AddCardsFromTask(DeckCreationTask.GetTaskForRandomMainCards(mainDeckCardsRemaining));
+				AddCardsFromTask(DeckCreationTask.GetTaskForRandomMainCards(mainDeckCardsRemaining), true);
 			}
 
 			int extraDeckCardsRemaining = ExtraDeckSize - ExtraDeckCards.Count;
 			if (DeckSettings.ExtraDeckAddRandomCardsIfNeeded && extraDeckCardsRemaining > 0)
 			{
 				Log.WriteLine("Not enough tasks to fill extra deck - adding random cards.");
-				AddCardsFromTask(DeckCreationTask.GetTaskForRandomExtraCards(extraDeckCardsRemaining));
+				AddCardsFromTask(DeckCreationTask.GetTaskForRandomExtraCards(extraDeckCardsRemaining), true);
 			}
 		}
 
@@ -182,27 +183,34 @@ namespace YuGiOhRandomizer
 		/// Adds the cards from the given task
 		/// </summary>
 		/// <param name="task">The task</param>
-		private void AddCardsFromTask(DeckCreationTask task)
+		/// <param name="overrideMainFilter">Used by the fallback random cards to add</param>
+		private void AddCardsFromTask(DeckCreationTask task, bool overrideMainFilter = false)
 		{
 			List<Card> deck = task.DeckType == DeckTypes.Main ? MainDeckCards : ExtraDeckCards;
 			int maxSize = task.DeckType == DeckTypes.Main ? MainDeckSize : ExtraDeckSize;
 
 			int numberOfCardsToAdd = task.CardRange.GetRandomValue();
-			List<Card> cardsToChooseFrom = GetCardsToChooseFrom(task);
 			List<Card> currentFilteredList;
 			for (int i = 0; i < numberOfCardsToAdd && deck.Count < maxSize; i++)
 			{
+				//TODO: might be able to save performance by doing this less often
+				List<Card> cardsToChooseFrom = GetCardsToChooseFrom(task);
+				if (!overrideMainFilter)
+                {
+					cardsToChooseFrom = DeckSettings.MainFilter?.ApplyFilter(cardsToChooseFrom) ?? cardsToChooseFrom;
+				}
+				
 				currentFilteredList = task.FilterNames(cardsToChooseFrom);
 
 				bool cardAddResults = AddCard(currentFilteredList, deck);
-				string currentNameFilter = task.FilterSet?.CurrentFilter?.ToString() ?? "";
+				string currentFilter = task.FilterSet?.CurrentFilter?.ToString() ?? "";
 				task.OnAddCardAttempt(cardAddResults);
 
 				if (task.IsPatternExhausted || task.ShouldExitNow)
 				{
 					if (task.IsPatternExhausted)
 					{
-						LogNameFilterError(currentNameFilter, i);
+						LogNameFilterError(currentFilter, i);
 					}
 					Log.WriteLine($"- Could only add {i} card(s) for this task because too many cards were filtered.");
 					break;
@@ -216,7 +224,7 @@ namespace YuGiOhRandomizer
 						Log.WriteLine("- ERROR: Somehow, we're retrying to add a card when there's no filter set!");
 					}
 
-					LogNameFilterError(currentNameFilter, i);
+					LogNameFilterError(currentFilter, i);
 					i--;
 				}
 			}
@@ -239,27 +247,16 @@ namespace YuGiOhRandomizer
 				? Program.CardList.MainDeckCards
 				: Program.CardList.ExtraDeckCards;
 
-			// If we're picking a random card, we want to ignore the general card type (other filters are valid, though)
-			bool ignoreTypeCheck = task.GeneralCardType == GeneralCardTypes.RandomMain ||
+			bool ignoreTypeCheck = 
+				task.GeneralCardType == GeneralCardTypes.RandomMain ||
 				task.GeneralCardType == GeneralCardTypes.RandomExtra;
-
-			// This check is only valid on random types, so let's not waste time doing it otherwise
-			if (ignoreTypeCheck)
-			{
-				cardsToChooseFrom = cardsToChooseFrom.Where(x => !task.ExcludedGeneralTypes.Contains(x.GeneralCardType)).ToList();
+			if (!ignoreTypeCheck)
+            {
+				cardsToChooseFrom = cardsToChooseFrom.Where(x => 
+					x.GeneralCardType == task.GeneralCardType).ToList();
 			}
 
-			cardsToChooseFrom = cardsToChooseFrom.Where(x => task.CardTypes == null || task.CardTypes.Contains(x.Type)).ToList();
-
-			cardsToChooseFrom = cardsToChooseFrom.Where(x =>
-				(ignoreTypeCheck || x.GeneralCardType == task.GeneralCardType) &&
-				(
-					task.MonsterLevelRange == null || // There is no level requirement set
-					(task.AllowLevel0IfNotInRange && (x.Level == 0)) || // Auto allow level 0s if the appropriate setting is on 
-					task.MonsterLevelRange.IsInRange(x.Level) // The level requirement is met
-				)
-			).ToList();
-
+			cardsToChooseFrom = task.FilterSet?.ApplyMainFilter(cardsToChooseFrom) ?? cardsToChooseFrom;
 			return cardsToChooseFrom;
 		}
 

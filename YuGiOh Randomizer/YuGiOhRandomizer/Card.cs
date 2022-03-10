@@ -176,6 +176,20 @@ namespace YuGiOhRandomizer
 		}
 
 		[JsonIgnore]
+		public bool IsNormal
+		{
+			get
+			{
+				return new List<CardTypes>()
+				{
+					CardTypes.NormalMonster,
+					CardTypes.NormalTunerMonster,
+					CardTypes.PendulumNormalMonster
+				}.Contains(Type);
+			}
+		}
+
+		[JsonIgnore]
 		public DeckTypes DeckType
 		{
 			get

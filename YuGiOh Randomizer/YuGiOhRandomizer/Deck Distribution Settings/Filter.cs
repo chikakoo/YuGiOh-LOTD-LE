@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
@@ -51,16 +52,25 @@ namespace YuGiOhRandomizer
 		public List<GeneralCardTypes> GeneralCardTypes { get; set; }
 
 		[JsonProperty]
+		public List<GeneralCardTypes> ExcludedGeneralTypes { get; set; }
+
+		[JsonProperty]
 		public List<CardTypes> CardTypes { get; set; }
 
 		[JsonProperty]
 		public Range LevelRange { get; set; }
 
 		[JsonProperty]
+		public bool AllowLevel0IfNotInRange { get; set; }
+
+		[JsonProperty]
 		public bool? IsPendulum { get; set; }
 
 		[JsonProperty]
 		public bool? IsTuner { get; set; }
+
+		[JsonProperty]
+		public bool? IsNormal { get; set; }
 
 		[JsonProperty]
 		public List<string> Archetypes { get; set; }
@@ -78,6 +88,16 @@ namespace YuGiOhRandomizer
 		public Range DefenseRange { get; set; }
 
 		/// <summary>
+		/// Applies the filter on the given list of cards
+		/// </summary>
+		/// <param name="cardList">The cards to run the filter on</param>
+		/// <returns>The cards that pass the filter</returns>
+		public List<Card> ApplyFilter(List<Card> cardList)
+        {
+			return cardList.Where(x => DoesCardPassFilter(x)).ToList();
+		}
+
+		/// <summary>
 		/// Returns whether the given card passes the filter
 		/// </summary>
 		/// <param name="card">The card</param>
@@ -86,10 +106,16 @@ namespace YuGiOhRandomizer
 		{
 			return DoesCardPassNameFilter(card) &&
 				(GeneralCardTypes == null || GeneralCardTypes.Contains(card.GeneralCardType)) &&
+				(ExcludedGeneralTypes == null || !ExcludedGeneralTypes.Contains(card.GeneralCardType)) &&
 				(CardTypes == null || CardTypes.Contains(card.Type)) &&
-				(LevelRange == null || LevelRange.IsInRange(card.Level)) &&
+				(
+					LevelRange == null ||
+					(AllowLevel0IfNotInRange && card.Level == 0) ||
+					LevelRange.IsInRange(card.Level)
+				) &&
 				(IsPendulum == null || card.IsPendulum == IsPendulum) &&
 				(IsTuner == null || card.IsTuner == IsTuner) &&
+				(IsNormal == null || card.IsNormal == IsNormal) &&
 				(Archetypes == null || Archetypes.Contains(card.Archetype)) &&
 				(Types == null || Types.Contains(card.Race)) &&
 				(Attributes == null || Attributes.Contains(card.Attribute)) &&

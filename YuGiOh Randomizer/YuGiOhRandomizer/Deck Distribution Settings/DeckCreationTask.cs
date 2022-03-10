@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace YuGiOhRandomizer
 {
@@ -17,32 +18,6 @@ namespace YuGiOhRandomizer
 		[JsonProperty]
 		[JsonConverter(typeof(StringEnumConverter))]
 		public GeneralCardTypes GeneralCardType { get; set; }
-
-		/// <summary>
-		/// A list of general types to NOT include - this is used with the Random types
-		/// </summary>
-		[JsonProperty(ItemConverterType = typeof(StringEnumConverter))]
-		public List<GeneralCardTypes> ExcludedGeneralTypes { get; set; } = new List<GeneralCardTypes>();
-
-		/// <summary>
-		/// A list of the specific card types to include
-		/// </summary>
-		[JsonProperty]
-		public List<CardTypes> CardTypes { get; set; }
-
-		/// <summary>
-		/// The level range to grab for monsters
-		/// ONLY useful for monsters
-		/// </summary>
-		[JsonProperty("levelRange")]
-		public Range MonsterLevelRange { get; set; }
-
-		/// <summary>
-		/// Whether we allow level 0 cards if they don't fall into the level range requiremebts
-		/// If this is true, then all Link monsters, for example, will be fair game even if there is a level range requirement
-		/// </summary>
-		[JsonProperty("allowLevel0IfNotInRange")]
-		public bool AllowLevel0IfNotInRange { get; set; }
 
 		/// <summary>
 		/// The number of cards to pick
@@ -93,7 +68,7 @@ namespace YuGiOhRandomizer
 		{
 			get
 			{
-				if (FilterSet == null)
+				if (FilterSet == default || FilterSet.Filters == default || !FilterSet.Filters.Any())
 				{
 					return false; // There is no pattern!
 				}
@@ -149,24 +124,25 @@ namespace YuGiOhRandomizer
 			{
 				FilterSet.OnCardAdded();
 			}
-
 		}
 
 		/// <summary>
 		/// Should be called when a card is NOT added successfully
 		/// Will set the exit flag if we don't have a name pattern
 		/// </summary>
-		private void OnCardAddFailure()
+		private bool OnCardAddFailure()
 		{
 			if (FilterSet != null)
 			{
-				FilterSet.OnCardAddFailure();
+				ShouldExitNow = FilterSet.OnCardAddFailure();
 			}
 
 			else
 			{
 				ShouldExitNow = true;
 			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -202,7 +178,7 @@ namespace YuGiOhRandomizer
 		public override string ToString()
 		{
 			string cardType = Enum.GetName(typeof(GeneralCardTypes), GeneralCardType);
-			return $"{cardType}: Levels {MonsterLevelRange}; Cards: {CardRange}";
+			return $"{cardType}: {CardRange}";
 		}
 	}
 }

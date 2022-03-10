@@ -29,6 +29,13 @@ namespace YuGiOhRandomizer
 		[JsonProperty]
 		public bool IgnoreBanList { get; set; }
 
+		/// <summary>
+		/// The main filter for the deck that every card will run though
+		/// unless it runs out of choices
+		/// </summary>
+		[JsonProperty]
+		public Filter MainFilter { get; set; }
+
 		[JsonProperty]
 		public List<DeckCreationTask> DeckCreationTasks { get; set; }
 	}
