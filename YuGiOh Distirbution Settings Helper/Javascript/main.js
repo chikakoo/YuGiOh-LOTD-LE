@@ -3,6 +3,9 @@ let Main = {
     deck2: null,
     selectedComponent: null,
 
+    /**
+     * Initialize the form
+     */
     initialize: function() {
         let decksContainer = document.getElementById("decksContainer");
 
@@ -43,6 +46,9 @@ let Main = {
         editContainer.innerHTML = "";
     },
 
+    /**
+     * Refreshes the main display div of the currently selected component
+     */
     refreshDisplay: function() {
         if (!this.selectedComponent) {
             return;
