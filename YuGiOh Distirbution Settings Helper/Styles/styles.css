@@ -1,0 +1,74 @@
+.nodisp {
+    display: none !important;
+}
+
+body {
+    display: flex;
+    flex-direction: row;
+}
+
+#editWindow {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    width: 500px;
+    margin-right: 8px;
+}
+
+#editWindow > #editContainer {
+    flex-grow: 1;
+}
+
+#decksContainer > div {
+    margin-bottom: 50px;
+}
+
+.deck-size-container, .ui-range {
+    display: flex;
+}
+
+.deck-size-container > div {
+    margin-right: 10px;
+}
+
+.ui-range > label {
+    padding-right: 4px;
+}
+
+input[type="number"] {
+    width: 60px;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+input[type="checkbox"] {
+    margin-right: 6px;
+}
+
+.ui-checkbox-set > label {
+    padding-right: 8px;
+}
+
+.ui-radio > label {
+    padding-right: 8px;
+}
+
+.deck-display {
+    background: gainsboro;
+    border: 2px solid darkgray;
+    padding: 4px;
+}
+
+.deck-display:hover {
+    background: lightgray;
+    border: 2px solid black;
+}
+
+.deck-display.display-selected {
+    border: 2px solid green;
+}
+
+.deck-creation-task-container, .deck-creation-task {
+    display: flex;
+    flex-direction: column;
+}

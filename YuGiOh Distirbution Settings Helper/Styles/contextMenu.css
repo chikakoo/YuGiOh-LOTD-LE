@@ -1,0 +1,23 @@
+#contextMenu {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    border-radius: 2px;
+    min-width: 100px;
+}
+
+#contextMenu > .context-menu-option {
+    border: 1px solid gray;
+    background-color: gainsboro;
+    padding: 0 4px 0 4px;
+}
+
+#contextMenu > .context-menu-option.context-menu-disabled {
+    color: darkgray;
+}
+
+#contextMenu > .context-menu-option:hover {
+    border: 1px solid gray;
+    background-color: gray;
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+        <head>
+        <title>YuGiOh Distrubution Helper</title>
+        <script type="text/javascript" src="Javascript/helpers.js"></script>
+        <script type="text/javascript" src="Javascript/random.js"></script>
+        <script type="text/javascript" src="Javascript/main.js"></script>
+        <script type="text/javascript" src="Javascript/Data/enums.js"></script>
+        <script type="text/javascript" src="Javascript/UI/contextMenu.js"></script>
+        <script type="text/javascript" src="Javascript/UI/uiHelpers.js"></script>
+        <script type="text/javascript" src="Javascript/UI/baseDeck.js"></script>
+        <script type="text/javascript" src="Javascript/UI/deckCreationTask.js"></script>
+        <script type="text/javascript" src="Javascript/UI/filter.js"></script>
+        <!-- <link rel="icon" href="" type="image/icon type"> -->
+        <link rel="stylesheet" href="Styles/styles.css">
+        <link rel="stylesheet" href="Styles/contextMenu.css">
+	</head>
+
+        <body oncontextmenu="return false" onload="Main.initialize()">
+                <div id="contextMenu" class="nodisp" onmouseleave="ContextMenu.hide()"></div>
+                <div id="editWindow">
+                        <div id="editContainer"></div>
+                        <button id="refreshDisplay", onclick="Main.refreshDisplay()">Refresh Display</button>
+                </div>
+                <div id="decksContainer"></div>
+        </body>
+</html>

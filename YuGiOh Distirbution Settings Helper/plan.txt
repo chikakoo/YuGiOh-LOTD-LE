@@ -1,0 +1,40 @@
+Layers:
+
+Main
+====
+mainDeckSize (range)
+extraDeckSize (range)
+mainDeckAddRandomCardsIfNeeded (bool)
+extraDecAddRandomCardsIfNeeded (bool)
+ignoreBanList (bool)
+
+mainFilter (Filter) = LAYER 2
+====
+>> deckCreationTasks (Array<Tasks>)
+generalCardType (cardType)
+cardRange (range)
+
+filterSet
+====
+mainFilter (Filter) = LAYER 3
+type (Strong)
+filters (Array<Filter>)
+shuffleFilters (bool)
+
+Filter
+====
+excludedGeneralTypes (Array<String>) (Not relevant for main filter)
+nameFilterType (String)
+name (String)
+generalCardTypes (Array<String>) (DO not include RandomMain/RandomExtra here)
+cardTypes (Array<String)
+isPendulum (bool)
+isTuner (bool)
+isNormal (bool)
+levelRange (range)
+allowLevel0IfNotInRange (bool)
+archetypes (Array<String>)
+types (Array<String>) (the race values)
+attributes (Array<String>)
+attackRange (range)
+defenseRange (range)
