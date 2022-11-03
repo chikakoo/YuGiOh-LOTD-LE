@@ -81,6 +81,11 @@ Now that we're all set up, go ahead and run YuGi_extract.py. Either double-click
 
 It will create a folder called _YGO_2020_. You can nagivate to YGO_2020/decks.zlib to get a list of all the opponent deck names you can replace with these scripts.
 
+## Customizing the Randomization
+If you wish to specify certain criteria with deck randomization, you can do so by modifying the deckDistributionSettings.json file, which will be in the same place you put the YuGiohRandomizer.dll. There's a variety of things you can do with the randomization - see the file itself for some documentation and examples.
+
+By default, it will use the "General Deck" settings, which simply provides a reasonable distrubtion of completely random monsters in set level brackets, as well as 9 random spells/traps.
+
 ## Running the Scripts
 Now we're ready to run the scripts! At this point, all you have to do is run the script you wish to use:
 - **YuGiOh Save Deck Extractor**: replace_opponent_deck_with_prebuilt.bat
